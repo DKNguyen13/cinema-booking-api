@@ -1,0 +1,8 @@
+-- Xóa toàn bộ database cinema_booking
+DROP DATABASE IF EXISTS cinema_booking;
+
+-- Xóa user 'cinema_booking' khỏi MySQL
+DROP USER IF EXISTS 'cinema_booking'@'%';
+
+-- Xác nhận cập nhật lại hệ thống quyền
+FLUSH PRIVILEGES;
