@@ -1,0 +1,29 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/cinema_booking
+    username: cinema_booking
+    password: cinema_booking123!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: nd2004lk13@gmail.com
+    password: ztcd vzll hrhv gmbe
+    default-encoding: UTF-8
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.ssl.protocols: TLSv1.2
+  mandatory-file-encoding: UTF-8  # Giúp tránh l?i ký t? ??c bi?t ho?c ti?ng Vi?t b? sai khi biên d?ch và ch?y ?ng d?ng
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  cache:
+    type: redis
