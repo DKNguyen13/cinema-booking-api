@@ -15,16 +15,16 @@ public class APIResponse<T> {
 
     //Success reponse with data
     public static <T> APIResponse<T> success(String message, T data) {
-        return new APIResponse<>(200, true, message, data);
+        return new APIResponse<T>(200, true, message, data);
     }
 
     //Succes without data
     public static <T> APIResponse<T> success(String message) {
-        return new APIResponse<>(200, true, message, null);
+        return new APIResponse<T>(200, true, message, null);
     }
 
     //Error without data
     public static <T> APIResponse<T> error(int code, String message) {
-        return new APIResponse<>(code, false, message, null);
+        return new APIResponse<T>(code, false, message, null);
     }
 }

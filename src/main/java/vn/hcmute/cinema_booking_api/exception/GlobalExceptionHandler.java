@@ -1,4 +1,4 @@
-package vn.hcmute.cinema_booking_api.repository;
+package vn.hcmute.cinema_booking_api.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;

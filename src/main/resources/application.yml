@@ -9,7 +9,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
   mail:
     host: smtp.gmail.com
     port: 587
@@ -20,7 +20,7 @@ spring:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
       mail.smtp.ssl.protocols: TLSv1.2
-  mandatory-file-encoding: UTF-8  # Giúp tránh l?i ký t? ??c bi?t ho?c ti?ng Vi?t b? sai khi biên d?ch và ch?y ?ng d?ng
+  mandatory-file-encoding: UTF-8
   data:
     redis:
       host: localhost
