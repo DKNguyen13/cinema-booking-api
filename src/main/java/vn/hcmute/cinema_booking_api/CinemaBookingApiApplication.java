@@ -11,7 +11,6 @@ import vn.hcmute.cinema_booking_api.repository.CategoryRepository;
 import vn.hcmute.cinema_booking_api.repository.RoleRepository;
 import vn.hcmute.cinema_booking_api.repository.SeatRepository;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
