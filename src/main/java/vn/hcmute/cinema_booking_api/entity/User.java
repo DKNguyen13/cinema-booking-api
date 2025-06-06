@@ -24,8 +24,7 @@ public class User {
     @Column(nullable = false, unique = true, length = 50)
     private String email;
 
-    @Column(nullable = false, length = 20)
-    @Length(min = 6, max = 20)
+    @Column(nullable = false, length = 500)
     @NotNull(message = "Mật khẩu không được để trống")
     private String psw;
 
@@ -47,6 +46,9 @@ public class User {
     @Min(0)
     @NotNull
     private int point;
+
+    @Column(nullable = true)
+    private String urlImage;
 
     @ManyToOne
     @JsonIgnore

@@ -14,7 +14,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: nd2004lk13@gmail.com
-    password: ztcd vzll hrhv gmbe
+    password: eiyl coxn mpxp fmyh
     default-encoding: UTF-8
     properties:
       mail.smtp.auth: true
