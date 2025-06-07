@@ -14,6 +14,7 @@ import vn.hcmute.cinema_booking_api.dto.UserDTO;
 import vn.hcmute.cinema_booking_api.dto.request.EmailRequest;
 import vn.hcmute.cinema_booking_api.dto.request.LoginRequest;
 import vn.hcmute.cinema_booking_api.dto.request.OtpRequest;
+import vn.hcmute.cinema_booking_api.dto.request.ProfileRequest;
 import vn.hcmute.cinema_booking_api.dto.response.ApiResponse;
 import vn.hcmute.cinema_booking_api.services.Impl.MailService;
 import vn.hcmute.cinema_booking_api.services.Impl.UserService;
@@ -22,7 +23,7 @@ import vn.hcmute.cinema_booking_api.utils.JwtUtils;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/user")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -36,7 +37,7 @@ public class UserController {
     @Autowired
     private MailService mailService;
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<?> loginAccount(@RequestBody LoginRequest loginRequest) {
         try{
             String email = loginRequest.getEmail();
@@ -66,7 +67,7 @@ public class UserController {
 
     }
 
-    @PostMapping("/otp")
+    @PostMapping("/auth/otp")
     public ResponseEntity<?> sendOTP(@RequestBody EmailRequest emailRequest) {
         String otp;
         try {
@@ -97,7 +98,7 @@ public class UserController {
     }
 
     //API Xac thuc otp
-    @PostMapping("/otp/verify")
+    @PostMapping("/auth/otp/verify")
     public ResponseEntity<?> verifyOtp(@RequestBody OtpRequest otpRequest) {
         if (otpRequest.getInfUser() == null || otpRequest.getOtpCode() == null) {
             return ResponseEntity.badRequest().body(ApiResponse.error(400, "Missing information or OTP"));
@@ -112,10 +113,35 @@ public class UserController {
             String phone = otpRequest.getInfUser().getPhone();
             String address = otpRequest.getInfUser().getAddr();
             String fullName = otpRequest.getInfUser().getFullName();
-            UserDTO userDTO = new UserDTO(email, password, fullName, phone, address, "");
+            UserDTO userDTO = new UserDTO(email, password, fullName, phone, address, "", "");
             userService.saveUser(userDTO);
             return ResponseEntity.ok(ApiResponse.success("OTP verified"));
         }
         return ResponseEntity.badRequest().body(ApiResponse.error(400, "OTP is incorrect"));
+    }
+
+    @PostMapping("/profile")
+    public ResponseEntity<?> updateProfile(@RequestBody ProfileRequest profileRequest) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if(authentication == null || !authentication.isAuthenticated()){
+                return ResponseEntity.badRequest().body(ApiResponse.error(401, "Authentication is required"));
+            }
+            if(profileRequest == null || profileRequest.getAddr().equals("") || profileRequest.getFullName().equals("") || profileRequest.getUrlImage().equals("")){
+                return ResponseEntity.badRequest().body(ApiResponse.error(400, "Invalid information"));
+            }
+            String email = authentication.getName();
+            System.out.println(email);
+            UserDTO userDTO = userService.findByEmail(email);
+            userDTO.setFullName(profileRequest.getFullName());
+            userDTO.setAddr(profileRequest.getAddr());
+            userDTO.setUrlImage(profileRequest.getUrlImage());
+            userService.saveUser(userDTO);
+            return ResponseEntity.ok(ApiResponse.success("Profile updated"));
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, "Failed to save profile"));
+        }
     }
 }

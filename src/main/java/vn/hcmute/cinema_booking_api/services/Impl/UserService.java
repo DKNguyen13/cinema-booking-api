@@ -39,6 +39,8 @@ public class UserService {
             userDTO.setAddr(user.get().getAddr());
             userDTO.setFullName(user.get().getFullName());
             userDTO.setPhone(user.get().getPhone());
+            userDTO.setUrlImage(user.get().getUrlImage());
+            userDTO.setToken("");
             return userDTO;
         }
         return null;

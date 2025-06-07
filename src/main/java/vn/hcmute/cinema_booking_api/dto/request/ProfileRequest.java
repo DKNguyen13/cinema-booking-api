@@ -1,4 +1,4 @@
-package vn.hcmute.cinema_booking_api.dto;
+package vn.hcmute.cinema_booking_api.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,12 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDTO {
-    private String email;
-    private String psw;
+public class ProfileRequest {
     private String fullName;
-    private String phone;
     private String addr;
     private String urlImage;
-    private String token = "";
 }

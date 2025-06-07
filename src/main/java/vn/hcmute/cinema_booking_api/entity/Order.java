@@ -8,8 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import vn.hcmute.cinema_booking_api.utils.OrderPayment;
-import vn.hcmute.cinema_booking_api.utils.OrderStatus;
+import vn.hcmute.cinema_booking_api.utils.enums.OrderPayment;
+import vn.hcmute.cinema_booking_api.utils.enums.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
