@@ -1,4 +1,4 @@
-package vn.hcmute.cinema_booking_api.services;
+package vn.hcmute.cinema_booking_api.services.Impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

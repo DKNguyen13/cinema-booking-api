@@ -8,11 +8,12 @@ import vn.hcmute.cinema_booking_api.entity.Role;
 import vn.hcmute.cinema_booking_api.entity.User;
 import vn.hcmute.cinema_booking_api.repository.RoleRepository;
 import vn.hcmute.cinema_booking_api.repository.UserRepository;
+import vn.hcmute.cinema_booking_api.services.IUserService;
 
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserService implements IUserService {
     @Autowired
     private UserRepository userRepository;
 
@@ -25,11 +26,13 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Override
     public Boolean checkExistEmail(String email) {
         return userRepository.existsByEmail(email);
     }
 
     //Find user by email
+    @Override
     public UserDTO findByEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isPresent()) {
@@ -46,12 +49,14 @@ public class UserService {
         return null;
     }
 
+    @Override
     public boolean checkExistEmailOrPhone(String email, String phone) {
         Boolean existEmail = userRepository.existsByEmail(email);
         Boolean existPhone = userRepository.existsByPhone(phone);
         return !existEmail && !existPhone;
     }
 
+    @Override
     public void saveUser(UserDTO userDTO) {
         Optional<User> user = userRepository.findByEmail(userDTO.getEmail());
         Role role = roleRepository.findByRoleName("USER");

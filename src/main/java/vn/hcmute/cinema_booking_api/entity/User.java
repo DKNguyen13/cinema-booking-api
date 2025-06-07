@@ -30,7 +30,7 @@ public class User {
 
     @Column(nullable = false, length = 40)
     @NotNull(message = "Không được để trong tên")
-    @Length(min = 6, max = 40)
+    @Length(min = 5, max = 40)
     private String fullName;
 
     @Column(nullable = false, unique = true, length = 10)

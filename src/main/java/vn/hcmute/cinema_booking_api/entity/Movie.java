@@ -3,6 +3,7 @@ package vn.hcmute.cinema_booking_api.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,11 +29,11 @@ public class Movie {
     private String description;
 
     @Column(nullable = false)
-    private int duration;
+    private Integer duration;
 
     @Column(nullable = false)
     @Min(0)
-    private int price;
+    private Integer price;
 
     @Column(nullable = false, length = 500)
     private String posterUrl;
@@ -42,6 +43,10 @@ public class Movie {
 
     @Column(nullable = false)
     private LocalDate releaseDate;
+
+    @NotNull
+    @Column(nullable = false)
+    private Boolean isActive = true;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

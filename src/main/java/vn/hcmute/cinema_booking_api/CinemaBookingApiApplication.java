@@ -5,12 +5,15 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import vn.hcmute.cinema_booking_api.entity.Category;
 import vn.hcmute.cinema_booking_api.entity.Role;
 import vn.hcmute.cinema_booking_api.entity.Seat;
+import vn.hcmute.cinema_booking_api.entity.User;
 import vn.hcmute.cinema_booking_api.repository.CategoryRepository;
 import vn.hcmute.cinema_booking_api.repository.RoleRepository;
 import vn.hcmute.cinema_booking_api.repository.SeatRepository;
+import vn.hcmute.cinema_booking_api.repository.UserRepository;
 
 import java.util.Arrays;
 import java.util.List;
@@ -55,9 +58,9 @@ public class CinemaBookingApiApplication {
 	}
 
 	@Bean
-	CommandLineRunner initCategory(CategoryRepository CategoryRepository) {
+	CommandLineRunner initCategory(CategoryRepository categoryRepository) {
 		return args -> {
-			if(CategoryRepository.count() == 0) {
+			if(categoryRepository.count() == 0) {
 				List<Category> categories = Arrays.asList(
 						new Category(null, "Action", null),
 						new Category(null, "Comedy", null),
@@ -68,10 +71,30 @@ public class CinemaBookingApiApplication {
 						new Category(null, "Documentary", null),
 						new Category(null, "Animation", null)
 				);
-				CategoryRepository.saveAll(categories);
+				categoryRepository.saveAll(categories);
 			}
 			else
 				System.out.println("Category already exists");
+		};
+	}
+
+	@Bean
+	CommandLineRunner initAdminAccount(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+		return args -> {
+			if(userRepository.count() == 0 || userRepository.findByEmail("admin@admin.com").isEmpty()) {
+				User u = new User();
+				u.setEmail("admin@admin.com");
+				u.setPsw(passwordEncoder.encode("admin"));
+				u.setAddr("VN");
+				u.setRole(roleRepository.findByRoleName("ADMIN"));
+				u.setFullName("Admin");
+				u.setPhone("0123323123");
+				u.setPoint(0);
+				u.setUrlImage("https://res.cloudinary.com/demec8nev/image/upload/v1745039879/default_avatar_r7xkiv.png");
+				userRepository.save(u);
+			}
+			else
+				System.out.println("Admin user already exists");
 		};
 	}
 }
