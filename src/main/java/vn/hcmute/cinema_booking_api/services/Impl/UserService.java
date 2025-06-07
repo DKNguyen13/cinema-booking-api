@@ -10,7 +10,9 @@ import vn.hcmute.cinema_booking_api.repository.RoleRepository;
 import vn.hcmute.cinema_booking_api.repository.UserRepository;
 import vn.hcmute.cinema_booking_api.services.IUserService;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements IUserService {
@@ -19,9 +21,6 @@ public class UserService implements IUserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private MailService mailService;
 
     @Autowired
     private RoleRepository roleRepository;
@@ -80,5 +79,21 @@ public class UserService implements IUserService {
             existingUser.setRole(role);
             userRepository.save(existingUser);
         }
+    }
+
+    @Override
+    public List<UserDTO> getAllUser(){
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .filter(user -> user.getRole().getRoleName().equals("USER"))
+                .map(user -> {
+                    UserDTO userDTO = new UserDTO();
+                    userDTO.setEmail(user.getEmail());
+                    userDTO.setAddr(user.getAddr());
+                    userDTO.setFullName(user.getFullName());
+                    userDTO.setPhone(user.getPhone());
+                    userDTO.setUrlImage(user.getUrlImage());
+                    return userDTO;
+                }).collect(Collectors.toList());
     }
 }
