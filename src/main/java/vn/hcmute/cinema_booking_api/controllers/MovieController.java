@@ -12,12 +12,12 @@ import vn.hcmute.cinema_booking_api.services.Impl.MovieService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/movies")
+@RequestMapping("/api")
 public class MovieController {
     @Autowired
     private MovieService movieService;
 
-    @GetMapping
+    @GetMapping("/movies")
     public ResponseEntity<?> getAllMovies() {
         try {
             List<Movie> movies = movieService.getAllMoviesActive();
@@ -33,7 +33,7 @@ public class MovieController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping
+    @PostMapping("/movie")
     public ResponseEntity<?> createMovie(@RequestBody MovieDTO dto) {
         try{
             movieService.createMovie(dto);
@@ -45,7 +45,7 @@ public class MovieController {
         }
     }
 
-    @GetMapping("/search")
+    @GetMapping("/movies/search")
     public ResponseEntity<?> getMoviesByTitle(@RequestParam String title) {
         try{
             List<Movie> movies = movieService.getMovieByTitle(title);
@@ -61,7 +61,7 @@ public class MovieController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/{id}")
+    @PatchMapping("/movies/{id}")
     public ResponseEntity<?> deactivateMovie(@PathVariable Long id) {
         try{
             movieService.deactivateMovie(id);

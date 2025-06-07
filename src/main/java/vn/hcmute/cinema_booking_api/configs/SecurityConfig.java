@@ -3,7 +3,6 @@ package vn.hcmute.cinema_booking_api.configs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -24,7 +23,7 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINT = {"/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html",//Swagger endpoint
             "/api/user/auth/**",
-            "/api/movies/search"
+            "/api/movies/search", "/api/movie"
     };
 
     @Bean
