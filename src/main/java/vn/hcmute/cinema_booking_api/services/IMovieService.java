@@ -10,7 +10,7 @@ public interface IMovieService {
 
     List<Movie> getMovieByTitle(String title);
 
-    void createMovie(Movie movie);
+    void createMovie(MovieDTO dto);
 
     void deactivateMovie(Long movieId);
 

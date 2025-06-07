@@ -31,7 +31,19 @@ public class MovieService implements IMovieService {
     }
 
     @Override
-    public void createMovie(Movie movie) {
+    public void createMovie(MovieDTO dto) {
+        Movie movie = new Movie();
+        movie.setTitle(dto.getTitle());
+        movie.setDescription(dto.getDescription());
+        movie.setReleaseDate(dto.getReleaseDate());
+        movie.setPrice(dto.getPrice());
+        movie.setDuration(dto.getDuration());
+        movie.setPosterUrl(dto.getPosterUrl());
+        movie.setTrailerUrl(dto.getTrailerUrl());
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+        movie.setCategory(category);
+        movie.setIsActive(true);
         movieRepository.save(movie);
     }
 

@@ -3,6 +3,7 @@ package vn.hcmute.cinema_booking_api.configs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,8 +21,7 @@ public class SecurityConfig {
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private String[] PUBLIC_ENDPOINT = {"/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html",//Swagger endpoint
-            "/api/user/auth/**",
-            "/api/movies",
+            "/api/user/auth/**"
     };
 
     @Bean
@@ -31,8 +31,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))//JWT khong dung session
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/user/profile").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/api/movies").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/movies").permitAll()
                         .requestMatchers(PUBLIC_ENDPOINT).permitAll()
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
