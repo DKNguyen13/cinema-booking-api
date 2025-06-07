@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -16,13 +17,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private String[] PUBLIC_ENDPOINT = {"/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html",//Swagger endpoint
+    private static final String[] PUBLIC_ENDPOINT = {"/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html",//Swagger endpoint
             "/api/user/auth/**",
-            "/api/movies/**",
+            "/api/movies/search"
     };
 
     @Bean
@@ -31,9 +33,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) //Tat csrf do API dung JWT
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))//JWT khong dung session
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/user/profile").hasRole("USER")
-                        .requestMatchers(HttpMethod.POST, "/api/movies").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/movies").permitAll()
+//                        .requestMatchers("/api/user/profile").hasRole("USER")
+//                        .requestMatchers(HttpMethod.PATCH, "/api/movies/*").hasRole("ADMIN")
+//                        .requestMatchers(HttpMethod.POST, "/api/movies").hasRole("ADMIN")
+//                        .requestMatchers(HttpMethod.GET, "/api/movies").permitAll()
                         .requestMatchers(PUBLIC_ENDPOINT).permitAll()
                         .anyRequest().authenticated()
                 )

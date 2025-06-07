@@ -2,6 +2,7 @@ package vn.hcmute.cinema_booking_api.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -120,6 +121,7 @@ public class UserController {
         return ResponseEntity.badRequest().body(ApiResponse.error(400, "OTP is incorrect"));
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping("/profile")
     public ResponseEntity<?> updateProfile(@RequestBody ProfileRequest profileRequest) {
         try {
