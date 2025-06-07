@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Component
 public class JwtUtils {
-    private final long JWT_EXPIRATION = 2 * 60 * 60 * 1000;//Thoi gian ton tai (2 gio)
+    private final long JWT_EXPIRATION = 1 * 60 * 60 * 1000;//Thoi gian ton tai (1 gio)
     private final String SECRET_KEY = "c99cad7fa62cf6617fde7d78dcd86a5676b536919ff4f099f5fb982cc143d746"; //Tao khoa bi mat
 
     private Key getSigningKey() {
