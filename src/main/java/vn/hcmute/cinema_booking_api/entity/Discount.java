@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 
@@ -35,7 +34,7 @@ public class Discount {
 
     @Column(nullable = false)
     @NotNull
-    private Boolean active = true;
+    private Boolean active;
 
     @Column(nullable = false)
     @Min(0)
