@@ -21,7 +21,7 @@ import vn.hcmute.cinema_booking_api.utils.JwtUtils;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/v1/user")
 public class UserController {
     @Autowired
     private UserService userService;

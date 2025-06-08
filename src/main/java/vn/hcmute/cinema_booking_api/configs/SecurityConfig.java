@@ -22,8 +22,9 @@ public class SecurityConfig {
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private static final String[] PUBLIC_ENDPOINT = {"/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html",//Swagger endpoint
-            "/api/user/auth/**",
-            "/api/movies/search", "/api/movie"
+            "/api/v1/user/auth/**",
+            "/api/v1/movies/search", "/api/v1/movie",
+            "/api/v1/categories"
     };
 
     @Bean

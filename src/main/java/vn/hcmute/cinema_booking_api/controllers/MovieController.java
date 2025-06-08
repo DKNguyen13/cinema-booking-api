@@ -12,7 +12,7 @@ import vn.hcmute.cinema_booking_api.services.Impl.MovieService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class MovieController {
     @Autowired
     private MovieService movieService;

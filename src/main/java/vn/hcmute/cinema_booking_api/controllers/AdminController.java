@@ -14,7 +14,7 @@ import vn.hcmute.cinema_booking_api.services.Impl.UserService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/v1/admin")
 public class AdminController {
     @Autowired
     private UserService userService;
