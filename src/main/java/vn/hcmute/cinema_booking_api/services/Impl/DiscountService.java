@@ -60,4 +60,17 @@ public class DiscountService {
                     return dto;
                 }).collect(Collectors.toList());
     }
+
+    public void creatDiscount(DiscountDTO dto) {
+        Discount discount = new Discount();
+        discount.setDiscountCode(dto.getDiscountCode());
+        discount.setDescription(dto.getDescription());
+        discount.setFixedAmount(dto.getFixedAmount());
+        discount.setActive(dto.getActive());
+        discount.setQuantity(dto.getQuantity());
+        discount.setPercentage(dto.getPercentage());
+        discount.setStartDate(dto.getStartDate());
+        discount.setEndDate(dto.getEndDate());
+        discountRepository.save(discount);
+    }
 }

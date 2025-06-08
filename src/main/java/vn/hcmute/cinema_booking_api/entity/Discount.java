@@ -34,7 +34,7 @@ public class Discount {
 
     @Column(nullable = false)
     @NotNull
-    private Boolean active;
+    private Boolean active = true;
 
     @Column(nullable = false)
     @Min(0)
