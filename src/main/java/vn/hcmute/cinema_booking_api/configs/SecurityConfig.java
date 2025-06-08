@@ -22,7 +22,7 @@ public class SecurityConfig {
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private static final String[] PUBLIC_ENDPOINT = {"/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html",//Swagger endpoint
-            "/api/v1/user/auth/**",
+            "/api/v1/auth/**",
             "/api/v1/movies/search", "/api/v1/movie",
             "/api/v1/categories"
     };
@@ -33,10 +33,6 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) //Tat csrf do API dung JWT
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))//JWT khong dung session
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/api/user/profile").hasRole("USER")
-//                        .requestMatchers(HttpMethod.PATCH, "/api/movies/*").hasRole("ADMIN")
-//                        .requestMatchers(HttpMethod.POST, "/api/movies").hasRole("ADMIN")
-//                        .requestMatchers(HttpMethod.GET, "/api/movies").permitAll()
                         .requestMatchers(PUBLIC_ENDPOINT).permitAll()
                         .anyRequest().authenticated()
                 )

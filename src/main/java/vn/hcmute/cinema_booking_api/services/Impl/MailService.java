@@ -71,4 +71,39 @@ public class MailService{
             e.printStackTrace();
         }
     }
+
+    @Async
+    public void sendNewPass(String toMail, String newPass){
+        try{
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message);
+
+            helper.setFrom(fromMail, "CINEMA BOOKING"); // Tên người gửi
+            helper.setTo(toMail.trim()); // Email người nhận
+            helper.setSubject("🔒 Reset Password - Your New Temporary Password");
+
+            String htmlContent = """
+                <div style='font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 30px;'>
+                    <div style='max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);'>
+                        <h2 style='color: #2c3e50;'>🎬 CINEMA BOOKING</h2>
+                        <p style='font-size: 16px; color: #333;'>You have requested to reset your password.</p>
+                        <p style='font-size: 16px; color: #333;'>Here is your new temporary password:</p>
+                        <div style='margin: 20px 0; padding: 15px; font-size: 24px; font-weight: bold; color: #d6336c; background-color: #f8d7da; border-radius: 5px; text-align: center;'>
+                            """ + newPass + """
+                        </div>
+                        <p style='font-size: 14px; color: #555;'>Please use this password to log in and remember to change it immediately after logging in for your security.</p>
+                        <p style='font-size: 12px; color: gray;'>If you didn’t request this password reset, you can safely ignore this email.</p>
+                        <hr style='margin: 30px 0; border: none; border-top: 1px solid #eee;' />
+                        <p style='font-size: 12px; color: #aaa;'>This is an automated message. Please do not reply.</p>
+                    </div>
+                </div>
+            """;
+
+            helper.setText(htmlContent, true); // true để gửi nội dung HTML
+            mailSender.send(message); // Gửi mail
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }

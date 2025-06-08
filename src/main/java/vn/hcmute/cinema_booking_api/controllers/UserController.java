@@ -9,10 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import vn.hcmute.cinema_booking_api.dto.UserDTO;
-import vn.hcmute.cinema_booking_api.dto.request.EmailRequest;
-import vn.hcmute.cinema_booking_api.dto.request.LoginRequest;
-import vn.hcmute.cinema_booking_api.dto.request.OtpRequest;
-import vn.hcmute.cinema_booking_api.dto.request.ProfileRequest;
+import vn.hcmute.cinema_booking_api.dto.request.*;
 import vn.hcmute.cinema_booking_api.dto.response.ApiResponse;
 import vn.hcmute.cinema_booking_api.services.Impl.MailService;
 import vn.hcmute.cinema_booking_api.services.Impl.UserService;
@@ -21,7 +18,7 @@ import vn.hcmute.cinema_booking_api.utils.JwtUtils;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -35,6 +32,7 @@ public class UserController {
     @Autowired
     private MailService mailService;
 
+    //Login
     @PostMapping("/auth/login")
     public ResponseEntity<?> loginAccount(@RequestBody LoginRequest loginRequest) {
         try{
@@ -65,8 +63,9 @@ public class UserController {
 
     }
 
-    @PostMapping("/auth/otp")
-    public ResponseEntity<?> sendOTP(@RequestBody EmailRequest emailRequest) {
+    //Send otp register
+    @PostMapping("/auth/otp-register")
+    public ResponseEntity<?> sendOTPRegister(@RequestBody EmailRequest emailRequest) {
         String otp;
         try {
             if (emailRequest.getEmail() == null || emailRequest.getEmail().isEmpty()) {
@@ -81,7 +80,7 @@ public class UserController {
             }
 
             //Kiem tra ton tai cua email va phone
-            if(!userService.checkExistEmailOrPhone(emailRequest.getEmail(), emailRequest.getPhone())) {
+            if(userService.checkExistEmailOrPhone(emailRequest.getEmail(), emailRequest.getPhone())) {
                 return ResponseEntity.badRequest().body(ApiResponse.error(400, "Email or Phone Exist!"));
             }
 
@@ -95,7 +94,37 @@ public class UserController {
         }
     }
 
-    //API Xac thuc otp
+    //Send otp reset password
+    @PostMapping("/auth/otp-reset-password")
+    public ResponseEntity<?> sendOTPResetPassword(@RequestBody EmailRequest emailRequest) {
+        String otp;
+        try {
+            if (emailRequest.getEmail() == null || emailRequest.getEmail().isEmpty()) {
+                return ResponseEntity.badRequest().body("Email is required");
+            }
+
+            // Regex kiểm tra địa chỉ email hợp lệ
+            String emailRegex = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+            if (!Pattern.matches(emailRegex, emailRequest.getEmail())) {
+                return ResponseEntity.badRequest().body(ApiResponse.error(400, "Invalid email format"));
+            }
+
+            //Kiem tra ton tai cua email va phone
+            if(!userService.checkExistEmailOrPhone(emailRequest.getEmail(), emailRequest.getPhone())) {
+                return ResponseEntity.badRequest().body(ApiResponse.error(400, "Email or Phone not Exist!"));
+            }
+
+            otp = mailService.generateOtp(emailRequest.getEmail().trim());
+            mailService.sendOTP(emailRequest.getEmail().trim(), otp);
+            ApiResponse<String> response = ApiResponse.success("OTP sent", null);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, "Failed to send OTP" + e.getMessage()));
+        }
+    }
+
+    //API verify otp
     @PostMapping("/auth/otp/verify")
     public ResponseEntity<?> verifyOtp(@RequestBody OtpRequest otpRequest) {
         if (otpRequest.getInfUser() == null || otpRequest.getOtpCode() == null) {
@@ -118,8 +147,30 @@ public class UserController {
         return ResponseEntity.badRequest().body(ApiResponse.error(400, "OTP is incorrect"));
     }
 
+    @PutMapping("/auth/password-reset")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        try {
+            if(request == null){
+                return ResponseEntity.badRequest().body(ApiResponse.error(400, "Invalid request"));
+            }
+            String email = request.getEmail();
+            String otp = request.getOtpCode();
+
+            if(mailService.validateOtp(email, otp)){
+                userService.resetPassword(email);
+                return ResponseEntity.ok(ApiResponse.success("OTP verified"));
+            }
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, "OTP is incorrect"));
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, "Failed to reset password"));
+        }
+    }
+
+    //Update profile
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    @PostMapping("/profile")
+    @PostMapping("/user/profile")
     public ResponseEntity<?> updateProfile(@RequestBody ProfileRequest profileRequest) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

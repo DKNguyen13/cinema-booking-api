@@ -6,10 +6,12 @@ import org.springframework.stereotype.Service;
 import vn.hcmute.cinema_booking_api.dto.UserDTO;
 import vn.hcmute.cinema_booking_api.entity.Role;
 import vn.hcmute.cinema_booking_api.entity.User;
+import vn.hcmute.cinema_booking_api.exception.ResourceNotFoundException;
 import vn.hcmute.cinema_booking_api.repository.RoleRepository;
 import vn.hcmute.cinema_booking_api.repository.UserRepository;
 import vn.hcmute.cinema_booking_api.services.IUserService;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,6 +26,9 @@ public class UserService implements IUserService {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private MailService mailService;
 
     @Override
     public Boolean checkExistEmail(String email) {
@@ -50,9 +55,7 @@ public class UserService implements IUserService {
 
     @Override
     public boolean checkExistEmailOrPhone(String email, String phone) {
-        Boolean existEmail = userRepository.existsByEmail(email);
-        Boolean existPhone = userRepository.existsByPhone(phone);
-        return !existEmail && !existPhone;
+        return userRepository.existsByEmailAndPhone(email, phone);
     }
 
     @Override
@@ -95,5 +98,18 @@ public class UserService implements IUserService {
                     userDTO.setUrlImage(user.getUrlImage());
                     return userDTO;
                 }).collect(Collectors.toList());
+    }
+
+    @Override
+    public void resetPassword(String email){
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            return;
+        }
+        User u = userOpt.get();
+        String newPass = String.valueOf(new SecureRandom().nextInt(900000) + 100000);
+        mailService.sendNewPass(u.getEmail(), newPass);
+        u.setPsw(passwordEncoder.encode(newPass));
+        userRepository.save(u);
     }
 }

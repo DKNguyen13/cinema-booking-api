@@ -15,4 +15,6 @@ public interface IUserService {
     void saveUser(UserDTO userDTO);
 
     List<UserDTO> getAllUser();
+
+    void resetPassword(String email);
 }
