@@ -80,5 +80,21 @@ public class DiscountController {
             return ResponseEntity.badRequest().body(ApiResponse.error(400, e.getMessage()));
         }
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/admin/discount/{id}")
+    public ResponseEntity<?> deleteDiscount(@PathVariable Long id) {
+        try {
+            boolean delete = discountService.deleteDiscount(id);
+            if(delete) {
+                return ResponseEntity.ok(ApiResponse.success("Discount deleted"));
+            }
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, "Not found"));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, e.getMessage()));
+        }
+    }
 }
 

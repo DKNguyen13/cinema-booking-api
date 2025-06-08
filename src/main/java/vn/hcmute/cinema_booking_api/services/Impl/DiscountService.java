@@ -8,6 +8,7 @@ import vn.hcmute.cinema_booking_api.repository.DiscountRepository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -72,5 +73,14 @@ public class DiscountService {
         discount.setStartDate(dto.getStartDate());
         discount.setEndDate(dto.getEndDate());
         discountRepository.save(discount);
+    }
+
+    public boolean deleteDiscount(Long id){
+        Optional<Discount> discount = discountRepository.findById(id);
+        if(discount.isEmpty()){
+            return false;
+        }
+        discountRepository.deleteById(id);
+        return true;
     }
 }

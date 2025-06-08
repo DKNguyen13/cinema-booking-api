@@ -7,6 +7,6 @@ import vn.hcmute.cinema_booking_api.entity.Discount;
 import java.util.List;
 
 @Repository
-public interface DiscountRepository extends JpaRepository<Discount, Integer> {
+public interface DiscountRepository extends JpaRepository<Discount, Long> {
     List<Discount> findDiscountsByActive(boolean active);
 }
