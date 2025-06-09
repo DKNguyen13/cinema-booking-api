@@ -23,4 +23,16 @@ public class SeatService {
                     return seatDTO;
                 }).collect(Collectors.toList());
     }
+
+    public List<SeatDTO> getAvailableSeatsByShowtimeId(Long showTimeId) {
+        return seatRepository.findAvailableSeatsByShowtimeId(showTimeId).stream()
+                .map(seat -> new SeatDTO(seat.getSeatCode()))
+                .collect(Collectors.toList());
+    }
+
+    public List<SeatDTO> getNotAvailableSeatsByShowTimeId(Long showTId){
+        return seatRepository.findNotAvailableSeatByShowTimeId(showTId).stream()
+                .map(seat -> new SeatDTO(seat.getSeatCode()))
+                .collect(Collectors.toList());
+    }
 }
