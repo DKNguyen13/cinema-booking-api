@@ -3,11 +3,11 @@ package vn.hcmute.cinema_booking_api.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import vn.hcmute.cinema_booking_api.dto.ShowTimeDTO;
 import vn.hcmute.cinema_booking_api.dto.UserDTO;
 import vn.hcmute.cinema_booking_api.dto.response.ApiResponse;
+import vn.hcmute.cinema_booking_api.services.Impl.ShowTimeService;
 import vn.hcmute.cinema_booking_api.services.Impl.UserService;
 
 import java.util.List;
@@ -17,6 +17,9 @@ import java.util.List;
 public class AdminController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ShowTimeService showTimeService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
@@ -29,5 +32,11 @@ public class AdminController {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(ApiResponse.error(400, "Failed to get users"));
         }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/show-time")
+    public ResponseEntity<?> createShow(@RequestBody ShowTimeDTO showTimeDTO){
+        return ResponseEntity.ok(ApiResponse.success("Show time created", showTimeService.createShowTime(showTimeDTO)));
     }
 }
