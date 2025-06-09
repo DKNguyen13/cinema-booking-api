@@ -3,10 +3,10 @@ package vn.hcmute.cinema_booking_api.services.Impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import vn.hcmute.cinema_booking_api.dto.UserDTO;
 import vn.hcmute.cinema_booking_api.entity.Role;
 import vn.hcmute.cinema_booking_api.entity.User;
-import vn.hcmute.cinema_booking_api.exception.ResourceNotFoundException;
 import vn.hcmute.cinema_booking_api.repository.RoleRepository;
 import vn.hcmute.cinema_booking_api.repository.UserRepository;
 import vn.hcmute.cinema_booking_api.services.IUserService;
@@ -29,6 +29,9 @@ public class UserService implements IUserService {
 
     @Autowired
     private MailService mailService;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     @Override
     public Boolean checkExistEmail(String email) {
@@ -73,15 +76,25 @@ public class UserService implements IUserService {
             newUser.setUrlImage("https://res.cloudinary.com/demec8nev/image/upload/v1745039879/default_avatar_r7xkiv.png");
             userRepository.save(newUser);
         }
-        else {
+        else
+            throw new RuntimeException("User already exists");
+    }
+
+    @Override
+    public void updateUser(UserDTO userDTO, MultipartFile file) {
+        Optional<User> user = userRepository.findByEmail(userDTO.getEmail());
+        if(user.isPresent()){
             User existingUser = user.get();
-            existingUser.setPsw(passwordEncoder.encode(userDTO.getPsw()));
             existingUser.setFullName(userDTO.getFullName());
             existingUser.setAddr(userDTO.getAddr());
-            existingUser.setPhone(userDTO.getPhone());
-            existingUser.setRole(role);
+            if(file !=null && !file.isEmpty()){
+                String urlImage = cloudinaryService.uploadImage(file);
+                existingUser.setUrlImage(urlImage);
+            }
             userRepository.save(existingUser);
         }
+        else
+            throw new RuntimeException("User does not exist");
     }
 
     @Override

@@ -10,5 +10,4 @@ import lombok.NoArgsConstructor;
 public class ProfileRequest {
     private String fullName;
     private String addr;
-    private String urlImage;
 }

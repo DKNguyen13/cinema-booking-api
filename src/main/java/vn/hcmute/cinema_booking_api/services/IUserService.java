@@ -1,5 +1,6 @@
 package vn.hcmute.cinema_booking_api.services;
 
+import org.springframework.web.multipart.MultipartFile;
 import vn.hcmute.cinema_booking_api.dto.UserDTO;
 
 import java.util.List;
@@ -13,6 +14,8 @@ public interface IUserService {
     boolean checkExistEmailOrPhone(String email, String phone);
 
     void saveUser(UserDTO userDTO);
+
+    void updateUser(UserDTO userDTO, MultipartFile file);
 
     List<UserDTO> getAllUser();
 

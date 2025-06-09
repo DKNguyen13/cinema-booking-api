@@ -47,7 +47,7 @@ public class CinemaBookingApiApplication {
 				for(char block : blocks){
 					for(int i = 0; i < seatNum; i++){
 						String seatCode = block + String.valueOf(seatNum);
-						seatRepository.save(new Seat(null, seatCode));
+						seatRepository.save(new Seat(null, seatCode, null));
 					}
 				}
 			}

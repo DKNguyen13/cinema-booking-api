@@ -1,13 +1,16 @@
 package vn.hcmute.cinema_booking_api.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import vn.hcmute.cinema_booking_api.dto.UserDTO;
 import vn.hcmute.cinema_booking_api.dto.request.*;
 import vn.hcmute.cinema_booking_api.dto.response.ApiResponse;
@@ -55,12 +58,13 @@ public class UserController {
             userDTO.setToken(token);
             return ResponseEntity.ok(ApiResponse.success("Login successful", userDTO));
         }
+        catch (BadCredentialsException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(401, "Password incorrect"));
+        }
         catch(Exception e){
             e.printStackTrace();
-            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, "Login failed"));
         }
-        return ResponseEntity.badRequest().body(ApiResponse.error(400, "Login failed"));
-
     }
 
     //Send otp register
@@ -170,23 +174,23 @@ public class UserController {
 
     //Update profile
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    @PostMapping("/user/profile")
-    public ResponseEntity<?> updateProfile(@RequestBody ProfileRequest profileRequest) {
+    @PostMapping(value = "/user/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)// Chỉ định API nhận dữ liệu multipart/form-data (file + form data)
+    public ResponseEntity<?> updateProfile(@RequestPart String fullName,
+                                           @RequestPart String addr,
+                                           @RequestPart(value = "image", required = false) MultipartFile image) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if(authentication == null || !authentication.isAuthenticated()){
                 return ResponseEntity.badRequest().body(ApiResponse.error(401, "Authentication is required"));
             }
-            if(profileRequest == null || profileRequest.getAddr().equals("") || profileRequest.getFullName().equals("") || profileRequest.getUrlImage().equals("")){
+            if (fullName == null || fullName.trim().isEmpty() || addr == null || addr.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body(ApiResponse.error(400, "Invalid information"));
             }
             String email = authentication.getName();
-            System.out.println(email);
             UserDTO userDTO = userService.findByEmail(email);
-            userDTO.setFullName(profileRequest.getFullName());
-            userDTO.setAddr(profileRequest.getAddr());
-            userDTO.setUrlImage(profileRequest.getUrlImage());
-            userService.saveUser(userDTO);
+            userDTO.setFullName(fullName);
+            userDTO.setAddr(addr);
+            userService.updateUser(userDTO, image);
             return ResponseEntity.ok(ApiResponse.success("Profile updated"));
         }
         catch(Exception e){
