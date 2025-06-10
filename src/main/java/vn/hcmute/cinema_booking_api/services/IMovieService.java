@@ -8,6 +8,10 @@ import java.util.List;
 public interface IMovieService {
     List<Movie> getAllMoviesActive();
 
+    List<Movie> getAllMoviesInactive();
+
+    List<Movie> getAllMovies();
+
     List<Movie> getMovieByTitle(String title);
 
     void createMovie(MovieDTO dto);

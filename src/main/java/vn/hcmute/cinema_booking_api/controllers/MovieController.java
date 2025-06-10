@@ -17,12 +17,12 @@ public class MovieController {
     @Autowired
     private MovieService movieService;
 
-    @GetMapping("/movies")
-    public ResponseEntity<?> getAllMovies() {
+    @GetMapping("/movies-active")
+    public ResponseEntity<?> getAllMoviesActive() {
         try {
             List<Movie> movies = movieService.getAllMoviesActive();
             if(movies.isEmpty()) {
-                return ResponseEntity.ok(ApiResponse.success("Not found"));
+                return ResponseEntity.ok(ApiResponse.success("Active movies is empty"));
             }
             return ResponseEntity.ok(ApiResponse.success("List movies", movies));
         }
@@ -32,8 +32,39 @@ public class MovieController {
         }
     }
 
+    @GetMapping("/admin/movies-inactive")
+    public ResponseEntity<?> getAllMoviesInactive() {
+        try {
+            List<Movie> movies = movieService.getAllMoviesInactive();
+            if(movies.isEmpty()) {
+                return ResponseEntity.ok(ApiResponse.success("Inactive movies is empty"));
+            }
+            return ResponseEntity.ok(ApiResponse.success("List inactive movies", movies));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, e.getMessage()));
+        }
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/movie")
+    @GetMapping("/admin/movies")
+    public ResponseEntity<?> getAllMovies() {
+        try{
+            List<Movie> list = movieService.getAllMovies();
+            if(list.isEmpty()) {
+                return ResponseEntity.ok(ApiResponse.success("No movies found"));
+            }
+            return ResponseEntity.ok(ApiResponse.success("List of movies", list));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, e.getMessage()));
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/admin/movie")
     public ResponseEntity<?> createMovie(@RequestBody MovieDTO dto) {
         try{
             movieService.createMovie(dto);
@@ -61,7 +92,7 @@ public class MovieController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/movies/{id}")
+    @PatchMapping("/admin/movies/{id}")
     public ResponseEntity<?> deactivateMovie(@PathVariable Long id) {
         try{
             movieService.deactivateMovie(id);
@@ -72,4 +103,6 @@ public class MovieController {
             return ResponseEntity.badRequest().body(ApiResponse.error(400, e.getMessage()));
         }
     }
+
+
 }

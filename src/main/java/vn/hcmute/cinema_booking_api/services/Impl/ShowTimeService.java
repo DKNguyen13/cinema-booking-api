@@ -30,6 +30,23 @@ public class ShowTimeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Movie id " + request.getMovieId() + " not found"));
         if(!movie.getIsActive())
             throw new BadRequestException("Movie is not active, cannot create showtime");
+
+        LocalDateTime newShowTime = request.getShowTime();
+
+        LocalDateTime windowStart = newShowTime.minusHours(4);
+        LocalDateTime windowEnd = newShowTime.plusHours(4);
+
+        List<ShowTime> existingShowTimes = showTimeRepository.findShowTimesBetween(windowStart, windowEnd);
+
+        for (ShowTime existing : existingShowTimes) {
+            LocalDateTime existingStart = existing.getShowTime();
+            int duration = existing.getMovie().getDuration();
+            LocalDateTime existingEnd = existingStart.plusMinutes(duration + 30); // +30 minutes rest
+
+            if (!newShowTime.isBefore(existingStart) && newShowTime.isBefore(existingEnd)) {
+                throw new BadRequestException("Time conflict: Movie [" + existing.getMovie().getTitle() + "] is already scheduled at this time.");
+            }
+        }
         ShowTime showTime = new ShowTime();
         showTime.setShowTime(request.getShowTime());
         showTime.setMovie(movie);

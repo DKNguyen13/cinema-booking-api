@@ -26,6 +26,16 @@ public class MovieService implements IMovieService {
     }
 
     @Override
+    public List<Movie> getAllMoviesInactive(){
+        return movieRepository.findAllByIsActiveFalse();
+    }
+
+    @Override
+    public List<Movie> getAllMovies(){
+        return movieRepository.findAll();
+    }
+
+    @Override
     public List<Movie> getMovieByTitle(String title) {
         return movieRepository.findAllByTitleContainingIgnoreCaseAndIsActiveTrue(title);
     }

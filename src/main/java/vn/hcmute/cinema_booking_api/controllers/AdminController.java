@@ -22,7 +22,7 @@ public class AdminController {
     private ShowTimeService showTimeService;
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping()
+    @GetMapping("/users")
     public ResponseEntity<?> getAllUsers() {
         try {
             List<UserDTO> userDTOList = userService.getAllUser();
@@ -32,11 +32,5 @@ public class AdminController {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(ApiResponse.error(400, "Failed to get users"));
         }
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/show-time")
-    public ResponseEntity<?> createShow(@RequestBody ShowTimeDTO showTimeDTO){
-        return ResponseEntity.ok(ApiResponse.success("Show time created", showTimeService.createShowTime(showTimeDTO)));
     }
 }
