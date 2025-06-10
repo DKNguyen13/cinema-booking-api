@@ -25,5 +25,4 @@ public class BookedSeat {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "showtimeId")
     private ShowTime showTime;
-
 }
