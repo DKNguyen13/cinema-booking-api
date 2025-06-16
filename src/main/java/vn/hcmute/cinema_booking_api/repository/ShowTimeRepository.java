@@ -17,4 +17,5 @@ public interface ShowTimeRepository extends JpaRepository<ShowTime, Long>{
     @Query("SELECT s FROM ShowTime s WHERE s.showTime BETWEEN :start AND :end")
     List<ShowTime> findShowTimesBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
+    Optional<ShowTime> findByShowtimeId(Long showId);
 }

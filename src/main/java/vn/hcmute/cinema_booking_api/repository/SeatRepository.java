@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import vn.hcmute.cinema_booking_api.entity.Seat;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SeatRepository extends JpaRepository<Seat, Long> {
@@ -15,4 +16,6 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 
     @Query("SELECT s FROM Seat s WHERE s.seatId IN (SELECT bs.seat.seatId FROM BookedSeat bs WHERE bs.showTime.showtimeId = :showTId)")
     List<Seat> findNotAvailableSeatByShowTimeId(@Param("showTId") Long showtimeId);
+
+    Optional<Seat> findSeatBySeatCode(String seatCode);
 }

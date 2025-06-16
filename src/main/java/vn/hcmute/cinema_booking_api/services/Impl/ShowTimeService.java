@@ -21,6 +21,11 @@ public class ShowTimeService {
     @Autowired
     private MovieRepository movieRepository;
 
+    public ShowTime findShowTimeById(Long id) {
+        return showTimeRepository.findByShowtimeId(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Show time not found"));
+    }
+
     public boolean checkExistShowTimeByShowTimeId(Long showTimeId){
         return showTimeRepository.existsById(showTimeId);
     }
