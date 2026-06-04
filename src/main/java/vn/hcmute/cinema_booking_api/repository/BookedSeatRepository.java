@@ -5,5 +5,6 @@ import org.springframework.stereotype.Repository;
 import vn.hcmute.cinema_booking_api.entity.BookedSeat;
 
 @Repository
-public interface BookedSeatRepository extends JpaRepository<BookedSeat, Integer> {
+public interface BookedSeatRepository extends JpaRepository<BookedSeat, Long> {
+    boolean existsBySeatSeatIdAndShowTimeShowtimeId(Long seatId, Long showtimeId);
 }

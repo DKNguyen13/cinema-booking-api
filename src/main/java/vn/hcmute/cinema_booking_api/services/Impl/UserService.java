@@ -58,7 +58,7 @@ public class UserService implements IUserService {
 
     @Override
     public boolean checkExistEmailOrPhone(String email, String phone) {
-        return userRepository.existsByEmailAndPhone(email, phone);
+        return userRepository.existsByEmail(email) || userRepository.existsByPhone(phone);
     }
 
     @Override

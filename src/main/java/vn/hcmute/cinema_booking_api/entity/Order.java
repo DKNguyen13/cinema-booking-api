@@ -44,7 +44,6 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderPayment payment;
 
-    @NotNull
     @Column(nullable = false, updatable = false)
     @CreationTimestamp // Hibernate tự động tạo giá trị thời gian
     private LocalDateTime createdDate;
