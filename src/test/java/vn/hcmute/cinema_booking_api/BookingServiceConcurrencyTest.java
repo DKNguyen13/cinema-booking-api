@@ -59,7 +59,7 @@ public class BookingServiceConcurrencyTest {
         String email1 = "test_user_1_" + UUID.randomUUID().toString().substring(0, 8) + "@example.com";
         User user1 = new User();
         user1.setEmail(email1);
-        user1.setPsw("password123!");
+        user1.setPassword("password123!");
         user1.setFullName("Test User One");
         user1.setPhone("0987" + UUID.randomUUID().toString().replaceAll("[^0-9]", "").substring(0, 6));
         user1.setAddr("123 Street");
@@ -69,7 +69,7 @@ public class BookingServiceConcurrencyTest {
         String email2 = "test_user_2_" + UUID.randomUUID().toString().substring(0, 8) + "@example.com";
         User user2 = new User();
         user2.setEmail(email2);
-        user2.setPsw("password123!");
+        user2.setPassword("password123!");
         user2.setFullName("Test User Two");
         user2.setPhone("0988" + UUID.randomUUID().toString().replaceAll("[^0-9]", "").substring(0, 6));
         user2.setAddr("456 Street");

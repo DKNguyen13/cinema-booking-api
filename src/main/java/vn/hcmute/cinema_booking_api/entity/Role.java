@@ -2,27 +2,29 @@ package vn.hcmute.cinema_booking_api.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 import java.util.List;
 
-@Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@Entity
+@Table(name = "roles")
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roleId;
 
-    @Column(nullable = false)
-    @NotNull(message = "Role name not null")
+    @NotBlank(message = "Role name must not be blank")
+    @Size(max = 30, message = "Role name must not exceed 30 characters")
+    @Column(nullable = false, unique = true, length = 30)
     private String roleName;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)//Trỏ tới thuộc tính role trong User
+    @OneToMany(mappedBy = "role")
     private List<User> users;
 }

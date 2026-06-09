@@ -84,8 +84,8 @@ public class CinemaBookingApiApplication {
 			if(userRepository.count() == 0 || userRepository.findByEmail("admin@admin.com").isEmpty()) {
 				User u = new User();
 				u.setEmail("admin@admin.com");
-				u.setPsw(passwordEncoder.encode("admin"));
-				u.setAddr("VN");
+				u.setPassword(passwordEncoder.encode("admin"));
+				u.setAddress("VN");
 				u.setRole(roleRepository.findByRoleName("ADMIN"));
 				u.setFullName("Admin");
 				u.setPhone("0123323123");

@@ -2,27 +2,30 @@ package vn.hcmute.cinema_booking_api.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Builder
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"seatId", "showtimeId"}))
+@Table(name = "booked_seats", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_booked_seat_showtime", columnNames = {"seat_id", "showtime_id"})
+    }
+)
 public class BookedSeat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bsId;
+    private Long bookedSeatId;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seatId")
+    @JsonIgnore
+    @JoinColumn(name = "seat_id", nullable = false)
     private Seat seat;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "showtimeId")
+    @JsonIgnore
+    @JoinColumn(name = "showtime_id", nullable = false)
     private ShowTime showTime;
 }

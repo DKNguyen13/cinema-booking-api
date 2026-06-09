@@ -2,57 +2,63 @@ package vn.hcmute.cinema_booking_api.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 import java.util.List;
 
-@Data
-@Entity
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@Entity
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @NotBlank(message = "Email must not be blank")
+    @Email(message = "Invalid email format")
+    @Size(max = 100, message = "Email must not exceed 100 characters")
+    @Column(nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(nullable = false, length = 500)
-    @NotNull(message = "Mật khẩu không được để trống")
-    private String psw;
+    @NotBlank(message = "Password must not be blank")
+    @Size(min = 8, max = 50, message = "Password must be between 8 and 50 characters")
+    @Column(nullable = false, length = 100)
+    private String password;
 
+    @NotBlank(message = "Full name must not be blank")
+    @Size(min = 5, max = 40, message = "Full name must be between 5 and 40 characters")
     @Column(nullable = false, length = 40)
-    @NotNull(message = "Không được để trong tên")
-    @Length(min = 5, max = 40)
     private String fullName;
 
+    @NotBlank(message = "Phone number must not be blank")
+    @Pattern(
+            regexp = "^(\\d{10})$",
+            message = "Phone number must contain exactly 10 digits"
+    )
     @Column(nullable = false, unique = true, length = 10)
-    @NotNull(message = "Số điện thoại không được để trống")
-    @Pattern(regexp = "^(\\d{10})$", message = "Số điện thoại phải có 10 chữ số")
     private String phone;
 
-    @Column(length = 70, nullable = false)
-    @NotNull(message = "Địa chỉ không được bỏ trống")
-    private String addr;
+    @NotBlank(message = "Address must not be blank")
+    @Size(max = 70, message = "Address must not exceed 70 characters")
+    @Column(nullable = false, length = 70)
+    private String address;
 
+    @Min(value = 0, message = "Point must be greater than or equal to 0")
+    @Builder.Default
     @Column(nullable = false)
-    @Min(0)
-    @NotNull
-    private int point;
+    private int point = 0;
 
-    @Column(nullable = true)
+    @Column(length = 255)
     private String urlImage;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    @JoinColumn(nullable = false, name = "roleId")
+    @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
     @OneToMany(mappedBy = "user")

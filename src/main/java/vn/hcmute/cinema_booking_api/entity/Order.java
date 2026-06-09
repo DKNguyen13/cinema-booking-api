@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import vn.hcmute.cinema_booking_api.utils.enums.OrderPayment;
 import vn.hcmute.cinema_booking_api.utils.enums.OrderStatus;
@@ -14,9 +12,11 @@ import vn.hcmute.cinema_booking_api.utils.enums.OrderStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -24,36 +24,36 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
 
-    @NotNull
+    @NotNull(message = "Final price must not be null")
+    @Min(value = 0, message = "Final price must be greater than or equal to 0")
     @Column(nullable = false)
-    @Min(0)
     private Integer finalPrice;
 
-    @NotNull
+    @NotNull(message = "Quantity must not be null")
+    @Min(value = 1, message = "Quantity must be greater than 0")
     @Column(nullable = false)
-    @Min(0)
     private Integer quantity;
 
-    @Column(nullable = false)
-    @NotNull
-    @Enumerated(EnumType.STRING)//Save enum value dạng chuỗi
+    @NotNull(message = "Order status must not be null")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
     private OrderStatus status;
 
-    @Column(nullable = false)
-    @NotNull
+    @NotNull(message = "Payment method must not be null")
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
     private OrderPayment payment;
 
+    @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    @CreationTimestamp // Hibernate tự động tạo giá trị thời gian
     private LocalDateTime createdDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order")
     @JsonIgnore
     private List<Ticket> tickets;
 }

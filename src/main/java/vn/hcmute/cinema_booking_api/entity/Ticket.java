@@ -3,54 +3,66 @@ package vn.hcmute.cinema_booking_api.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 import java.time.LocalDateTime;
 
-@Data
-@Entity
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@Entity
+@Table(name = "tickets")
 public class Ticket {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ticketId;
 
-    @Column(nullable = false, length = 50)
+    @NotBlank(message = "User email must not be blank")
+    @Size(max = 100, message = "User email must not exceed 100 characters")
+    @Column(nullable = false, length = 100)
     private String userEmail;
 
+    @NotBlank(message = "Movie title must not be blank")
+    @Size(max = 100, message = "Movie title must not exceed 100 characters")
     @Column(nullable = false, length = 100)
     private String movieTitle;
 
+    @NotNull(message = "Showtime date time must not be null")
     @Column(nullable = false)
     private LocalDateTime showTimeDateTime;
 
+    @NotNull(message = "Price must not be null")
+    @Min(value = 0, message = "Price must be greater than or equal to 0")
     @Column(nullable = false)
-    @Min(0)
     private Integer price;
 
+    @NotBlank(message = "Seat code must not be blank")
+    @Size(max = 5, message = "Seat code must not exceed 5 characters")
     @Column(nullable = false, length = 5)
     private String seatCode;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    @JoinColumn(name = "showtimeId")
+    @JoinColumn(name = "showtime_id", nullable = false)
     private ShowTime showtime;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    @JoinColumn(name = "seatId")
+    @JoinColumn(name = "seat_id", nullable = false)
     private Seat seat;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    @JoinColumn(name = "orderId")
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 }

@@ -2,26 +2,30 @@ package vn.hcmute.cinema_booking_api.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+
 import java.util.List;
 
-@Entity
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Builder
+@Entity
+@Table(name = "categories")
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long categoryId;
 
-    @Column(nullable = false)
-    @NotNull
+    @NotBlank(message = "Category name must not be blank")
+    @Size(max = 50, message = "Category name must not exceed 50 characters")
+    @Column(nullable = false, unique = true, length = 50)
     private String categoryName;
 
+    @ManyToMany(mappedBy = "categories")
     @JsonIgnore
-    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Movie> movies;
 }

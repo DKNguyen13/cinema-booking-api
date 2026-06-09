@@ -46,7 +46,7 @@ public class UserService implements IUserService {
             UserDTO userDTO = new UserDTO();
             userDTO.setEmail(user.get().getEmail());
             userDTO.setPsw("");
-            userDTO.setAddr(user.get().getAddr());
+            userDTO.setAddr(user.get().getAddress());
             userDTO.setFullName(user.get().getFullName());
             userDTO.setPhone(user.get().getPhone());
             userDTO.setUrlImage(user.get().getUrlImage());
@@ -68,9 +68,9 @@ public class UserService implements IUserService {
         if(user.isEmpty()){
             User newUser = new User();
             newUser.setEmail(userDTO.getEmail());
-            newUser.setPsw(passwordEncoder.encode(userDTO.getPsw()));
+            newUser.setPassword(passwordEncoder.encode(userDTO.getPsw()));
             newUser.setFullName(userDTO.getFullName());
-            newUser.setAddr(userDTO.getAddr());
+            newUser.setAddress(userDTO.getAddr());
             newUser.setPhone(userDTO.getPhone());
             newUser.setRole(role);
             newUser.setUrlImage("https://res.cloudinary.com/demec8nev/image/upload/v1745039879/default_avatar_r7xkiv.png");
@@ -86,7 +86,7 @@ public class UserService implements IUserService {
         if(user.isPresent()){
             User existingUser = user.get();
             existingUser.setFullName(userDTO.getFullName());
-            existingUser.setAddr(userDTO.getAddr());
+            existingUser.setAddress(userDTO.getAddr());
             if(file !=null && !file.isEmpty()){
                 String urlImage = cloudinaryService.uploadImage(file);
                 existingUser.setUrlImage(urlImage);
@@ -105,7 +105,7 @@ public class UserService implements IUserService {
                 .map(user -> {
                     UserDTO userDTO = new UserDTO();
                     userDTO.setEmail(user.getEmail());
-                    userDTO.setAddr(user.getAddr());
+                    userDTO.setAddr(user.getAddress());
                     userDTO.setFullName(user.getFullName());
                     userDTO.setPhone(user.getPhone());
                     userDTO.setUrlImage(user.getUrlImage());
@@ -122,7 +122,7 @@ public class UserService implements IUserService {
         User u = userOpt.get();
         String newPass = String.valueOf(new SecureRandom().nextInt(900000) + 100000);
         mailService.sendNewPass(u.getEmail(), newPass);
-        u.setPsw(passwordEncoder.encode(newPass));
+        u.setPassword(passwordEncoder.encode(newPass));
         userRepository.save(u);
     }
 }
