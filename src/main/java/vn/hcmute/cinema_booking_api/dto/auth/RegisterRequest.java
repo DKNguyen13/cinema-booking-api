@@ -1,4 +1,4 @@
-package vn.hcmute.cinema_booking_api.dto.request;
+package vn.hcmute.cinema_booking_api.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LoginRequest {
+public class RegisterRequest {
     @NotBlank(message = "Email must not be blank")
     @Email(message = "Invalid email format")
     private String email;

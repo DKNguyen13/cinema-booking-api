@@ -10,6 +10,7 @@ import vn.hcmute.cinema_booking_api.entity.Category;
 import vn.hcmute.cinema_booking_api.entity.Role;
 import vn.hcmute.cinema_booking_api.entity.Seat;
 import vn.hcmute.cinema_booking_api.entity.User;
+import vn.hcmute.cinema_booking_api.repository.UserRepository;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
 @SpringBootApplication
 @EnableAsync
 public class CinemaBookingApiApplication {
-
+/*
 	public static void main(String[] args) {
 		SpringApplication.run(CinemaBookingApiApplication.class, args);
 	}
@@ -93,4 +94,5 @@ public class CinemaBookingApiApplication {
 				System.out.println("Admin user already exists");
 		};
 	}
+	*/
 }
