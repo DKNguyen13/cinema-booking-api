@@ -11,4 +11,5 @@ public class CONSTANT {
     public static final String OTP_PREFIX = "OTP:";
     public static final int OTP_LENGTH = 6;
     public static final long OTP_EXPIRE_MINUTES = 5;
+    public static final String OTP_LIMIT_PREFIX = "OTP_LIMIT:";
 }
