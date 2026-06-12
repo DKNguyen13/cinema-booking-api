@@ -21,6 +21,8 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+public class JwtAuthenticationFilter{
+/*
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
@@ -77,4 +79,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         return null;
     }
+ */
 }
