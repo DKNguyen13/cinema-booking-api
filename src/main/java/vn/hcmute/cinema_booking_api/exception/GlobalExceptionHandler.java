@@ -37,6 +37,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)//Xử lý các lỗi chung khác
     public ResponseEntity<?> handleGlobalExceptions(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(500, "Internal server error"));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(500, "Internal server error" + ex.getMessage()));
     }
 }
