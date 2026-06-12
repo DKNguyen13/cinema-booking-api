@@ -26,8 +26,8 @@ public class User {
     private String email;
 
     @NotBlank(message = "Password must not be blank")
-    @Size(min = 8, max = 50, message = "Password must be between 8 and 50 characters")
-    @Column(nullable = false, length = 100)
+    @Size(min = 8, max = 255, message = "Password must be between 8 and 255 characters")
+    @Column(nullable = false, length = 255)
     private String password;
 
     @NotBlank(message = "Full name must not be blank")
