@@ -3,11 +3,7 @@ package vn.hcmute.cinema_booking_api;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import vn.hcmute.cinema_booking_api.dto.request.BookingRequest;
-import vn.hcmute.cinema_booking_api.dto.response.BookingResponse;
 import vn.hcmute.cinema_booking_api.entity.*;
-import vn.hcmute.cinema_booking_api.repository.*;
-import vn.hcmute.cinema_booking_api.services.Impl.BookingService;
 import vn.hcmute.cinema_booking_api.utils.enums.OrderPayment;
 
 import java.time.LocalDate;

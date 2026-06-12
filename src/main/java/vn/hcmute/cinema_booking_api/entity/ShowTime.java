@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "showtimes")
 public class ShowTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +23,7 @@ public class ShowTime {
     private LocalDateTime showTime;
 
     @JsonIgnore
-    @JoinColumn(name = "movieId")
+    @JoinColumn(name = "movie_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Movie movie;
 }
