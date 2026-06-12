@@ -2,6 +2,7 @@ package vn.hcmute.cinema_booking_api.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -23,8 +24,16 @@ public class RegisterRequest {
     private String fullName;
 
     @NotBlank(message = "Phone must not be blank")
+    @Pattern(
+            regexp = "^(\\d{10})$",
+            message = "Phone number must contain exactly 10 digits"
+    )
     private String phone;
 
     @NotBlank(message = "Address must not be blank")
     private String address;
+
+    @NotBlank(message = "OTP is required")
+    @Pattern(regexp = "\\d{6}", message = "OTP must be 6 digits")
+    private String otp;
 }
