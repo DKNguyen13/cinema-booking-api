@@ -1,57 +1,92 @@
 package vn.hcmute.cinema_booking_api.services.Impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.hcmute.cinema_booking_api.dto.auth.AuthResponse;
 import vn.hcmute.cinema_booking_api.entity.Role;
 import vn.hcmute.cinema_booking_api.entity.User;
+import vn.hcmute.cinema_booking_api.exception.BadRequestException;
 import vn.hcmute.cinema_booking_api.repository.RoleRepository;
 import vn.hcmute.cinema_booking_api.repository.UserRepository;
 import vn.hcmute.cinema_booking_api.services.IAuthService;
-
-import java.util.Optional;
+import vn.hcmute.cinema_booking_api.services.IMailService;
+import vn.hcmute.cinema_booking_api.utils.CONSTANT;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService implements IAuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final IMailService mailService;
+    private final PasswordEncoder passwordEncoder;
 
     // Login
     @Override
-    public boolean login(String email, String password) {
-        Optional<User> user = userRepository.findByEmail(email);
-        if (user.isEmpty()) return false;
-        if (!user.get().getPassword().equals(password)) return false;
+    public void login(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadRequestException("Invalid email or password!"));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new BadRequestException("Invalid email or password");
+        }
         // [JWT_SECURITY]
-        return true;
     }
 
     // Register
     @Override
-    public boolean register(String email, String password, String fullName, String phone, String address) {
-        if (checkExistEmailOrPhone(email, phone)) return false;
-        Role role = roleRepository
-                .findByRoleName("USER")
-                .orElseThrow(() ->
-                        new RuntimeException("Role USER not found"));
+    public void sendRegisterOTP(String email, String phone) {
+        if (email == null || phone == null) {
+            throw new BadRequestException("Missing required fields");
+        }
+        if (checkExistEmailOrPhone(email, phone)){
+            throw new BadRequestException("Email or phone already in use!");
+        }
+        mailService.checkOtpRateLimit(email);
+        String otp = mailService.generateOtp(email);
+        mailService.sendOtpEmail(email, otp);
+    }
+
+    // Verify OTP register
+    @Override
+    public void verifyRegisterOTP(String email, String password, String fullName, String phone, String address, String otp) {
+        if (email == null || phone == null || otp == null) {
+            throw new BadRequestException("Missing required fields");
+        }
+
+        if (userRepository.existsByPhone(phone)) {
+            throw new BadRequestException("Phone already in use!");
+        }
+
+        if (userRepository.existsByEmail(email)) {
+            throw new BadRequestException("Email already in use!");
+        }
+
+        boolean valid = mailService.validateOtp(email, otp);
+
+        if (!valid) {
+            throw new BadRequestException("Invalid OTP!");
+        }
+
+        Role role = roleRepository.findByRoleName("USER")
+                .orElseThrow(() -> new BadRequestException("Role not found"));
+
         User user = User.builder()
                 .email(email)
-                .password(password)//passwordEncoder.encode(password) [JWT_SECURITY]
+                .password(passwordEncoder.encode(password))
                 .fullName(fullName)
                 .phone(phone)
                 .address(address)
-                .urlImage("https://res.cloudinary.com/demec8nev/image/upload/v1745039879/default_avatar_r7xkiv.png")// default url
+                .urlImage(CONSTANT.DEFAULT_AVATAR)
                 .role(role)
                 .build();
         userRepository.save(user);
-        return true;
     }
 
     // Helper
     @Override
     public boolean checkExistEmailOrPhone(String email, String phone) {
-        return userRepository.existsByEmailOrPhone(email, phone);
+        return userRepository.existsByEmail(email) || userRepository.existsByPhone(phone);
     }
 
     @Override
