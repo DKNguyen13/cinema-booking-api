@@ -3,12 +3,13 @@ package vn.hcmute.cinema_booking_api.services.Impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import vn.hcmute.cinema_booking_api.dto.auth.AuthResponse;
+import vn.hcmute.cinema_booking_api.dto.auth.LoginResponse;
 import vn.hcmute.cinema_booking_api.entity.Role;
 import vn.hcmute.cinema_booking_api.entity.User;
 import vn.hcmute.cinema_booking_api.exception.BadRequestException;
 import vn.hcmute.cinema_booking_api.repository.RoleRepository;
 import vn.hcmute.cinema_booking_api.repository.UserRepository;
+import vn.hcmute.cinema_booking_api.security.jwt.JwtUtils;
 import vn.hcmute.cinema_booking_api.services.IAuthService;
 import vn.hcmute.cinema_booking_api.services.IMailService;
 import vn.hcmute.cinema_booking_api.utils.CONSTANT;
@@ -20,10 +21,11 @@ public class AuthService implements IAuthService {
     private final RoleRepository roleRepository;
     private final IMailService mailService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtils jwtUtils;
 
     // Login
     @Override
-    public void login(String email, String password) {
+    public LoginResponse login(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BadRequestException("Invalid email or password!"));
 
@@ -31,6 +33,12 @@ public class AuthService implements IAuthService {
             throw new BadRequestException("Invalid email or password");
         }
         // [JWT_SECURITY]
+        String token = jwtUtils.generateToken(user.getEmail());
+        return LoginResponse.builder()
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .token(token)
+                .build();
     }
 
     // Register
@@ -87,20 +95,5 @@ public class AuthService implements IAuthService {
     @Override
     public boolean checkExistEmailOrPhone(String email, String phone) {
         return userRepository.existsByEmail(email) || userRepository.existsByPhone(phone);
-    }
-
-    @Override
-    public AuthResponse getCurrentUser(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found!"));
-        return mapToAuthResponse(user);
-    }
-
-    public AuthResponse mapToAuthResponse(User user) {
-        return AuthResponse.builder()
-                .email(user.getEmail())
-                .fullName(user.getFullName())
-                .role(user.getRole().getRoleName())
-                .build();
     }
 }

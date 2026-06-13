@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import vn.hcmute.cinema_booking_api.dto.auth.LoginResponse;
 import vn.hcmute.cinema_booking_api.dto.auth.LoginRequest;
 import vn.hcmute.cinema_booking_api.dto.auth.RegisterRequest;
 import vn.hcmute.cinema_booking_api.dto.auth.SendOtpRequest;
@@ -21,8 +22,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest) {
-        authService.login(loginRequest.getEmail(), loginRequest.getPassword());
-        return ResponseEntity.ok(ApiResponse.success("Login successful!"));
+        LoginResponse currentUser = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
+        return ResponseEntity.ok(ApiResponse.success("Login successful!", currentUser));
     }
 
     @PostMapping("/register/send-otp")
