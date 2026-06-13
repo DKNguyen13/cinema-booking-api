@@ -1,4 +1,4 @@
-package vn.hcmute.cinema_booking_api.configs;
+package vn.hcmute.cinema_booking_api.security.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
