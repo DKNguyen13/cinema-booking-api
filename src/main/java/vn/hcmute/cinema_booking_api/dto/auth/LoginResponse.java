@@ -10,5 +10,6 @@ import lombok.*;
 public class LoginResponse {
     private String email;
     private String fullName;
+    private String imgUrl;
     private String token;
 }

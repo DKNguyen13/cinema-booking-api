@@ -37,6 +37,7 @@ public class AuthService implements IAuthService {
         return LoginResponse.builder()
                 .email(user.getEmail())
                 .fullName(user.getFullName())
+                .imgUrl(user.getImageUrl())
                 .token(token)
                 .build();
     }
