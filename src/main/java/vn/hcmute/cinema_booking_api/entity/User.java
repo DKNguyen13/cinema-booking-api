@@ -51,13 +51,17 @@ public class User {
     @Min(value = 0, message = "Point must be greater than or equal to 0")
     @Builder.Default
     @Column(nullable = false)
-    private int point = 0;
+    private Integer point = 0;
 
     @Column(length = 500)
     private String imageUrl;
 
     @Column(length = 255)
     private String imagePublicId;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean isActive = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore

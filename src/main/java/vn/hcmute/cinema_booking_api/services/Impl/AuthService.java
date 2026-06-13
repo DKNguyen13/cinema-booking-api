@@ -32,6 +32,11 @@ public class AuthService implements IAuthService {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new BadRequestException("Invalid email or password");
         }
+
+        if (!Boolean.TRUE.equals(user.getIsActive())){
+            throw new BadRequestException("Your account has been deactivated. Please contact support.");
+        }
+
         // [JWT_SECURITY]
         String token = jwtUtils.generateToken(user.getEmail());
         return LoginResponse.builder()
