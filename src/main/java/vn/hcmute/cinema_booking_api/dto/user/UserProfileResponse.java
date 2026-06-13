@@ -13,5 +13,5 @@ public class UserProfileResponse {
     private String phone;
     private String address;
     private Integer point;
-    private String imageUrl;
+    private String imagePublicId;
 }
