@@ -53,8 +53,11 @@ public class User {
     @Column(nullable = false)
     private int point = 0;
 
+    @Column(length = 500)
+    private String imageUrl;
+
     @Column(length = 255)
-    private String urlImage;
+    private String imagePublicId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore

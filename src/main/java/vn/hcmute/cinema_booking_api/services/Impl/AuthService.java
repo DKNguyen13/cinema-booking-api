@@ -77,7 +77,7 @@ public class AuthService implements IAuthService {
                 .fullName(fullName)
                 .phone(phone)
                 .address(address)
-                .urlImage(CONSTANT.DEFAULT_AVATAR)
+                .imageUrl(CONSTANT.DEFAULT_AVATAR)
                 .role(role)
                 .build();
         userRepository.save(user);
