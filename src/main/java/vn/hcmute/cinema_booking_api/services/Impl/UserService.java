@@ -28,20 +28,15 @@ public class UserService implements IUserService {
     // Get user profile
     @Override
     public UserProfileResponse getUserProfile() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByEmail(auth.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        return  mapUserToUserProfileResponse(user);
+        User user = getCurrentUser();
+        return mapUserToUserProfileResponse(user);
     }
 
     // Update profile
     @Transactional
     @Override
     public void updateProfile(UpdateProfileRequest request) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new BadRequestException("User not found"));
-
+        User user = getCurrentUser();
         user.setFullName(request.getFullName());
         user.setPhone(request.getPhone());
         user.setAddress(request.getAddress());
@@ -49,7 +44,6 @@ public class UserService implements IUserService {
         MultipartFile image = request.getImage();
 
         if (image != null && !image.isEmpty()) {
-
             String oldPublicId = user.getImagePublicId();
             Map<String, Object> uploadResult = cloudinaryService.uploadFile(image);
             user.setImageUrl(uploadResult.get("secure_url").toString());
@@ -66,9 +60,7 @@ public class UserService implements IUserService {
     @Transactional
     @Override
     public void changePassword(ChangePasswordRequest request) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new BadRequestException("User not found"));
+        User user = getCurrentUser();
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             throw new BadRequestException("Old password is incorrect");
@@ -93,5 +85,11 @@ public class UserService implements IUserService {
                 .imageUrl(user.getImageUrl())
                 .imagePublicId(user.getImagePublicId())
                 .build();
+    }
+
+    private User getCurrentUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadRequestException("User not found"));
     }
 }
