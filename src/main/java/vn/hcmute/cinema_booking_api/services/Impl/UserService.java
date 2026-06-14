@@ -2,12 +2,11 @@ package vn.hcmute.cinema_booking_api.services.Impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import vn.hcmute.cinema_booking_api.dto.user.ChangePasswordRequest;
+import vn.hcmute.cinema_booking_api.dto.user.UpdatePasswordRequest;
 import vn.hcmute.cinema_booking_api.dto.user.UpdateProfileRequest;
 import vn.hcmute.cinema_booking_api.dto.user.UserProfileResponse;
 import vn.hcmute.cinema_booking_api.entity.User;
@@ -59,7 +58,7 @@ public class UserService implements IUserService {
     // Change password
     @Transactional
     @Override
-    public void changePassword(ChangePasswordRequest request) {
+    public void changePassword(UpdatePasswordRequest request) {
         User user = getCurrentUser();
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {

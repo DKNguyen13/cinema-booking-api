@@ -3,14 +3,8 @@ package vn.hcmute.cinema_booking_api.controllers.Auth;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import vn.hcmute.cinema_booking_api.dto.auth.LoginResponse;
-import vn.hcmute.cinema_booking_api.dto.auth.LoginRequest;
-import vn.hcmute.cinema_booking_api.dto.auth.RegisterRequest;
-import vn.hcmute.cinema_booking_api.dto.auth.SendOtpRequest;
+import org.springframework.web.bind.annotation.*;
+import vn.hcmute.cinema_booking_api.dto.auth.*;
 import vn.hcmute.cinema_booking_api.services.IAuthService;
 import vn.hcmute.cinema_booking_api.utils.ApiResponse;
 
@@ -36,5 +30,17 @@ public class AuthController {
     public ResponseEntity<?> verifyOtp(@RequestBody @Valid RegisterRequest req) {
         authService.verifyRegisterOTP(req.getEmail(), req.getPassword(), req.getFullName(), req.getPhone(), req.getAddress(), req.getOtp());
         return ResponseEntity.ok(ApiResponse.success("Register successful!", null));
+    }
+
+    @PostMapping("/forgot-password/send-otp")
+    public ResponseEntity<?> sendResetPasswordOtp(@RequestBody @Valid ForgotPasswordRequest req) {
+        authService.sendForgotPasswordOtp(req.getEmail());
+        return ResponseEntity.ok(ApiResponse.success("OTP sent to email!", null));
+    }
+
+    @PostMapping("/forgot-password/reset")
+    public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest req) {
+        authService.resetPassword(req.getEmail(), req.getOtp(), req.getNewPassword());
+        return ResponseEntity.ok(ApiResponse.success("Password reset successful!", null));
     }
 }

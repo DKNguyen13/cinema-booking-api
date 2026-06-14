@@ -50,9 +50,6 @@ public class AuthService implements IAuthService {
     // Register
     @Override
     public void sendRegisterOTP(String email, String phone) {
-        if (email == null || phone == null) {
-            throw new BadRequestException("Missing required fields");
-        }
         if (checkExistEmailOrPhone(email, phone)){
             throw new BadRequestException("Email or phone already in use!");
         }
@@ -94,6 +91,33 @@ public class AuthService implements IAuthService {
                 .imageUrl(CONSTANT.DEFAULT_AVATAR)
                 .role(role)
                 .build();
+        userRepository.save(user);
+    }
+
+    // Send OTP forget password
+    @Override
+    public void sendForgotPasswordOtp(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadRequestException("Email is invalid!"));
+
+        mailService.checkOtpRateLimit(email);
+        String otp = mailService.generateOtp(email);
+        mailService.sendOtpEmail(email, otp);
+    }
+
+    // Verify forgot password OTP
+    @Override
+    public void resetPassword(String email, String otp, String newPassword) {
+        boolean valid = mailService.validateOtp(email, otp);
+
+        if (!valid) {
+            throw new BadRequestException("Invalid OTP!");
+        }
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadRequestException("User not found!"));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
 

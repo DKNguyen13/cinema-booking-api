@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vn.hcmute.cinema_booking_api.dto.user.ChangePasswordRequest;
+import vn.hcmute.cinema_booking_api.dto.user.UpdatePasswordRequest;
 import vn.hcmute.cinema_booking_api.dto.user.UpdateProfileRequest;
 import vn.hcmute.cinema_booking_api.services.IUserService;
 import vn.hcmute.cinema_booking_api.utils.ApiResponse;
@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @PutMapping("/change-password")
-    public ResponseEntity<ApiResponse<String>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+    public ResponseEntity<ApiResponse<String>> changePassword(@Valid @RequestBody UpdatePasswordRequest request) {
         userService.changePassword(request);
         return ResponseEntity.ok(ApiResponse.success("Password changed successfully"));
     }

@@ -5,6 +5,5 @@ public interface IMailService {
     boolean validateOtp(String email, String otp);
     void sendOtpEmail(String email, String otp);
     void sendNewPassword(String email, String newPassword);
-
     void checkOtpRateLimit(String email);
 }
