@@ -9,6 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class CategoryRequest {
-    @NotBlank()
-    private String categoryName;
+    @NotBlank(message = "Category name is empty!")
+    private String cateName;
 }
