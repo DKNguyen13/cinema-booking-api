@@ -12,10 +12,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class AdminService {
+public class AdminService implements vn.hcmute.cinema_booking_api.services.IAdminService {
     private final UserRepository userRepository;
 
     // Get all user
+    @Override
     public List<UserListResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
@@ -24,6 +25,7 @@ public class AdminService {
     }
 
     // Get user detail
+    @Override
     public UserDetailResponse getUserDetail(Long userId) {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new BadRequestException("User not found"));
@@ -31,6 +33,7 @@ public class AdminService {
     }
 
     // Set active/inactive account
+    @Override
     public void setStatusUser(Long userId) {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new BadRequestException("User not found"));
