@@ -5,8 +5,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
+import vn.hcmute.cinema_booking_api.entity.Category;
 import vn.hcmute.cinema_booking_api.entity.Role;
+import vn.hcmute.cinema_booking_api.repositories.CategoryRepository;
 import vn.hcmute.cinema_booking_api.repositories.RoleRepository;
+
+import java.util.Arrays;
+import java.util.List;
 
 @SpringBootApplication
 @EnableAsync
@@ -16,6 +21,7 @@ public class CinemaBookingApiApplication {
 		SpringApplication.run(CinemaBookingApiApplication.class, args);
 	}
 
+	/*
 	@Bean
 	CommandLineRunner initRoleRunner(RoleRepository roleRepository) {
 		return args -> {
@@ -27,7 +33,33 @@ public class CinemaBookingApiApplication {
 				System.out.println("Role already exists");
 		};
 	}
-/*
+	 */
+
+	/*
+	@Bean
+	CommandLineRunner initCategory(CategoryRepository categoryRepository) {
+		return args -> {
+			if(categoryRepository.count() == 0) {
+				List<Category> categories = List.of(
+						Category.builder().categoryName("Action").build(),
+						Category.builder().categoryName("Comedy").build(),
+						Category.builder().categoryName("Drama").build(),
+						Category.builder().categoryName("Horror").build(),
+						Category.builder().categoryName("Romance").build(),
+						Category.builder().categoryName("Science Fiction").build(),
+						Category.builder().categoryName("Documentary").build(),
+						Category.builder().categoryName("Animation").build()
+				);
+
+				categoryRepository.saveAll(categories);
+			}
+			else
+				System.out.println("Category already exists");
+		};
+	}
+	 */
+
+	/*
 	@Bean
 	CommandLineRunner initSeatRunner(SeatRepository seatRepository) {
 		return args -> {
@@ -47,26 +79,7 @@ public class CinemaBookingApiApplication {
 		};
 	}
 
-	@Bean
-	CommandLineRunner initCategory(CategoryRepository categoryRepository) {
-		return args -> {
-			if(categoryRepository.count() == 0) {
-				List<Category> categories = Arrays.asList(
-						new Category(null, "Action", null),
-						new Category(null, "Comedy", null),
-						new Category(null, "Drama", null),
-						new Category(null, "Horror", null),
-						new Category(null, "Romance", null),
-						new Category(null, "Science Fiction", null),
-						new Category(null, "Documentary", null),
-						new Category(null, "Animation", null)
-				);
-				categoryRepository.saveAll(categories);
-			}
-			else
-				System.out.println("Category already exists");
-		};
-	}
+
 
 	@Bean
 	CommandLineRunner initAdminAccount(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
