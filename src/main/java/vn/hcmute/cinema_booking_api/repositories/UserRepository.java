@@ -1,4 +1,4 @@
-package vn.hcmute.cinema_booking_api.repository;
+package vn.hcmute.cinema_booking_api.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

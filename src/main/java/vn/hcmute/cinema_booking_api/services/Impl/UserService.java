@@ -11,7 +11,7 @@ import vn.hcmute.cinema_booking_api.dto.user.UpdateProfileRequest;
 import vn.hcmute.cinema_booking_api.dto.user.UserProfileResponse;
 import vn.hcmute.cinema_booking_api.entity.User;
 import vn.hcmute.cinema_booking_api.exception.BadRequestException;
-import vn.hcmute.cinema_booking_api.repository.UserRepository;
+import vn.hcmute.cinema_booking_api.repositories.UserRepository;
 import vn.hcmute.cinema_booking_api.services.ICloudinaryService;
 import vn.hcmute.cinema_booking_api.services.IUserService;
 

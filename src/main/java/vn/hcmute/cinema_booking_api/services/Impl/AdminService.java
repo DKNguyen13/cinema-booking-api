@@ -6,13 +6,13 @@ import vn.hcmute.cinema_booking_api.dto.admin.UserDetailResponse;
 import vn.hcmute.cinema_booking_api.dto.admin.UserListResponse;
 import vn.hcmute.cinema_booking_api.entity.User;
 import vn.hcmute.cinema_booking_api.exception.BadRequestException;
-import vn.hcmute.cinema_booking_api.repository.UserRepository;
-
+import vn.hcmute.cinema_booking_api.repositories.UserRepository;
+import vn.hcmute.cinema_booking_api.services.IAdminService;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class AdminService implements vn.hcmute.cinema_booking_api.services.IAdminService {
+public class AdminService implements IAdminService {
     private final UserRepository userRepository;
 
     // Get all user

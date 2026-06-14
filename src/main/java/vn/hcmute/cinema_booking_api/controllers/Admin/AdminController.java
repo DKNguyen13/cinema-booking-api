@@ -1,4 +1,4 @@
-package vn.hcmute.cinema_booking_api.controllers.Auth;
+package vn.hcmute.cinema_booking_api.controllers.Admin;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import vn.hcmute.cinema_booking_api.entity.User;
-import vn.hcmute.cinema_booking_api.repository.UserRepository;
+import vn.hcmute.cinema_booking_api.repositories.UserRepository;
 import java.util.Collection;
 import java.util.List;
 
