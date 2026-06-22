@@ -26,4 +26,8 @@ public class ShowTime {
     @JoinColumn(name = "movie_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Movie movie;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
 }

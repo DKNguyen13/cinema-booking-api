@@ -13,7 +13,12 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "seats")
+@Table(
+        name = "seats",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"room_id", "seat_code"})
+        }
+)
 public class Seat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,4 +32,8 @@ public class Seat {
     @OneToMany(mappedBy = "seat")
     @JsonIgnore
     private List<BookedSeat> bookedSeats;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
 }
