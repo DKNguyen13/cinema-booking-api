@@ -6,10 +6,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import vn.hcmute.cinema_booking_api.entity.Category;
+import vn.hcmute.cinema_booking_api.entity.Movie;
 import vn.hcmute.cinema_booking_api.entity.Role;
 import vn.hcmute.cinema_booking_api.repositories.CategoryRepository;
+import vn.hcmute.cinema_booking_api.repositories.MovieRepository;
 import vn.hcmute.cinema_booking_api.repositories.RoleRepository;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,7 +24,6 @@ public class CinemaBookingApiApplication {
 		SpringApplication.run(CinemaBookingApiApplication.class, args);
 	}
 
-	/*
 	@Bean
 	CommandLineRunner initRoleRunner(RoleRepository roleRepository) {
 		return args -> {
@@ -33,9 +35,7 @@ public class CinemaBookingApiApplication {
 				System.out.println("Role already exists");
 		};
 	}
-	 */
 
-	/*
 	@Bean
 	CommandLineRunner initCategory(CategoryRepository categoryRepository) {
 		return args -> {
@@ -57,48 +57,96 @@ public class CinemaBookingApiApplication {
 				System.out.println("Category already exists");
 		};
 	}
-	 */
 
-	/*
 	@Bean
-	CommandLineRunner initSeatRunner(SeatRepository seatRepository) {
+	CommandLineRunner initCategoryAndMovie(CategoryRepository categoryRepository, MovieRepository movieRepository) {
 		return args -> {
-			if(seatRepository.count() == 0) {
-				char [] blocks = {'A', 'B', 'C'};
-				int seatNum = 6;
-				for(char block : blocks){
-					for(int i = 0; i < seatNum; i++){
-						String seatCode = block + String.valueOf(i);
-						seatRepository.save(new Seat(null, seatCode, null));
-					}
-				}
+			if (categoryRepository.count() == 0) {
+				categoryRepository.saveAll(List.of(
+						Category.builder().categoryName("Action").build(),
+						Category.builder().categoryName("Comedy").build(),
+						Category.builder().categoryName("Drama").build(),
+						Category.builder().categoryName("Horror").build(),
+						Category.builder().categoryName("Romance").build(),
+						Category.builder().categoryName("Science Fiction").build(),
+						Category.builder().categoryName("Documentary").build(),
+						Category.builder().categoryName("Animation").build()
+				));
 			}
-			else {
-				System.out.println("Seat already exists");
+
+			if (movieRepository.count() == 0) {
+				Category action = categoryRepository.findByCategoryNameIgnoreCase("Action").orElseThrow();
+				Category comedy = categoryRepository.findByCategoryNameIgnoreCase("Comedy").orElseThrow();
+				Category drama = categoryRepository.findByCategoryNameIgnoreCase("Drama").orElseThrow();
+				Category horror = categoryRepository.findByCategoryNameIgnoreCase("Horror").orElseThrow();
+				Category romance = categoryRepository.findByCategoryNameIgnoreCase("Romance").orElseThrow();
+				Category sciFi = categoryRepository.findByCategoryNameIgnoreCase("Science Fiction").orElseThrow();
+				Category animation = categoryRepository.findByCategoryNameIgnoreCase("Animation").orElseThrow();
+
+				movieRepository.saveAll(List.of(
+						Movie.builder()
+								.title("Avengers: Endgame")
+								.description("After the devastating events of Infinity War, the Avengers assemble once more to reverse Thanos' actions.")
+								.duration(181)
+								.price(90000)
+								.posterUrl("https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg")
+								.trailerUrl("https://www.youtube.com/watch?v=TcMBFSGVi1c")
+								.releaseDate(LocalDate.of(2019, 4, 26))
+								.isActive(true)
+								.categories(List.of(action, sciFi))
+								.build(),
+
+						Movie.builder()
+								.title("Inside Out 2")
+								.description("Riley enters her teenage years and faces new emotions inside her mind.")
+								.duration(96)
+								.price(75000)
+								.posterUrl("https://image.tmdb.org/t/p/w500/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg")
+								.trailerUrl("https://www.youtube.com/watch?v=LEjhY15eCx0")
+								.releaseDate(LocalDate.of(2024, 6, 14))
+								.isActive(true)
+								.categories(List.of(animation, comedy))
+								.build(),
+
+						Movie.builder()
+								.title("The Conjuring")
+								.description("Paranormal investigators help a family terrorized by a dark presence in their farmhouse.")
+								.duration(112)
+								.price(80000)
+								.posterUrl("https://image.tmdb.org/t/p/w500/wVYREutTvI2tmxr6ujrHT704wGF.jpg")
+								.trailerUrl("https://www.youtube.com/watch?v=k10ETZ41q5o")
+								.releaseDate(LocalDate.of(2013, 7, 19))
+								.isActive(true)
+								.categories(List.of(horror))
+								.build(),
+
+						Movie.builder()
+								.title("La La Land")
+								.description("A pianist and an actress fall in love while pursuing their dreams in Los Angeles.")
+								.duration(128)
+								.price(85000)
+								.posterUrl("https://image.tmdb.org/t/p/w500/uDO8zWDhfWwoFdKS4fzkUJt0Rf0.jpg")
+								.trailerUrl("https://www.youtube.com/watch?v=0pdqf4P9MB8")
+								.releaseDate(LocalDate.of(2016, 12, 9))
+								.isActive(true)
+								.categories(List.of(romance, drama))
+								.build(),
+
+						Movie.builder()
+								.title("Interstellar")
+								.description("A team of explorers travels through a wormhole in space in an attempt to ensure humanity's survival.")
+								.duration(169)
+								.price(95000)
+								.posterUrl("https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg")
+								.trailerUrl("https://www.youtube.com/watch?v=zSWdZVtXT7E")
+								.releaseDate(LocalDate.of(2014, 11, 7))
+								.isActive(true)
+								.categories(List.of(sciFi, drama))
+								.build()
+				));
+			} else {
+				System.out.println("Movie already exists");
 			}
 		};
 	}
-
-
-
-	@Bean
-	CommandLineRunner initAdminAccount(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
-		return args -> {
-			if(userRepository.count() == 0 || userRepository.findByEmail("admin@admin.com").isEmpty()) {
-				User u = new User();
-				u.setEmail("admin@admin.com");
-				u.setPassword(passwordEncoder.encode("admin"));
-				u.setAddress("VN");
-				u.setRole(roleRepository.findByRoleName("ADMIN"));
-				u.setFullName("Admin");
-				u.setPhone("0123323123");
-				u.setPoint(0);
-				u.setUrlImage("https://res.cloudinary.com/demec8nev/image/upload/v1745039879/default_avatar_r7xkiv.png");
-				userRepository.save(u);
-			}
-			else
-				System.out.println("Admin user already exists");
-		};
-	}
- */
 }
