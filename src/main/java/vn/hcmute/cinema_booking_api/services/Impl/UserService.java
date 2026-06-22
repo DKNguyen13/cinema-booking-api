@@ -14,7 +14,6 @@ import vn.hcmute.cinema_booking_api.exception.BadRequestException;
 import vn.hcmute.cinema_booking_api.repositories.UserRepository;
 import vn.hcmute.cinema_booking_api.services.ICloudinaryService;
 import vn.hcmute.cinema_booking_api.services.IUserService;
-
 import java.util.Map;
 
 @Service
