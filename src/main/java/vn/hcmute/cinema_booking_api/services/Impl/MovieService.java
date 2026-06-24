@@ -11,7 +11,6 @@ import vn.hcmute.cinema_booking_api.exception.BadRequestException;
 import vn.hcmute.cinema_booking_api.repositories.CategoryRepository;
 import vn.hcmute.cinema_booking_api.repositories.MovieRepository;
 import vn.hcmute.cinema_booking_api.services.IMovieService;
-
 import java.util.List;
 
 @Service
@@ -34,7 +33,6 @@ public class MovieService implements IMovieService {
     public MovieDetailResponse getMovieDetail(Long movieId) {
         Movie movie = movieRepository.findByMovieIdAndIsActiveTrue(movieId)
                 .orElseThrow(() -> new BadRequestException("Movie not found"));
-
         return mapToMovieDetailResponse(movie);
     }
 
