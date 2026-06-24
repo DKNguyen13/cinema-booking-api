@@ -29,6 +29,7 @@ public class CinemaBookingApiApplication {
 		return args -> {
 			if(roleRepository.count() == 0) {
 				roleRepository.save(new Role(null, "ADMIN", null));
+				roleRepository.save(new Role(null, "STAFF", null));
 				roleRepository.save(new Role(null, "USER", null));
 			}
 			else

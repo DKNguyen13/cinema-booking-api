@@ -6,9 +6,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import vn.hcmute.cinema_booking_api.utils.enums.OrderPayment;
 import vn.hcmute.cinema_booking_api.utils.enums.OrderStatus;
-
+import vn.hcmute.cinema_booking_api.utils.enums.PaymentMethod;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -42,16 +41,28 @@ public class Order {
     @NotNull(message = "Payment method must not be null")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private OrderPayment payment;
+    private PaymentMethod payment;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdDate;
 
+    private LocalDateTime paidAt;
+    private LocalDateTime expiredAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @JoinColumn(name = "showtime_id", nullable = false)
+    private ShowTime showtime;
+
+    @OneToMany(mappedBy = "order")
+    @JsonIgnore
+    private List<OrderItem> items;
 
     @OneToMany(mappedBy = "order")
     @JsonIgnore
