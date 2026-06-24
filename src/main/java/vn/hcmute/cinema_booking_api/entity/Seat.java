@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+
 import java.util.List;
 
 @Getter
@@ -16,7 +17,10 @@ import java.util.List;
 @Table(
         name = "seats",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"room_id", "seat_code"})
+                @UniqueConstraint(
+                        name = "uk_seat_room_code",
+                        columnNames = {"room_id", "seat_code"}
+                )
         }
 )
 public class Seat {
@@ -26,14 +30,15 @@ public class Seat {
 
     @NotBlank(message = "Seat code must not be blank")
     @Size(max = 5, message = "Seat code must not exceed 5 characters")
-    @Column(nullable = false, unique = true, length = 5)
+    @Column(name = "seat_code", nullable = false, length = 5)
     private String seatCode;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
 
     @OneToMany(mappedBy = "seat")
     @JsonIgnore
     private List<BookedSeat> bookedSeats;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id", nullable = false)
-    private Room room;
 }

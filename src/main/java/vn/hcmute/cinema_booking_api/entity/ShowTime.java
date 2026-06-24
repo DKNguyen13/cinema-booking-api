@@ -3,14 +3,15 @@ package vn.hcmute.cinema_booking_api.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDateTime;
 
-@Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
+@Getter
 @Entity
 @Table(name = "showtimes")
 public class ShowTime {

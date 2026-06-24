@@ -9,8 +9,9 @@ import vn.hcmute.cinema_booking_api.utils.ApiResponse;
 import java.time.LocalDate;
 import java.util.List;
 
-@RestController("/api/movies")
+@RestController()
 @RequiredArgsConstructor
+@RequestMapping("/api/movies")
 public class ShowTimeController {
     private final IShowTimeService showTimeService;
 

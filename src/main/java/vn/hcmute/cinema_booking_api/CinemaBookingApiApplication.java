@@ -5,15 +5,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
-import vn.hcmute.cinema_booking_api.entity.Category;
-import vn.hcmute.cinema_booking_api.entity.Movie;
-import vn.hcmute.cinema_booking_api.entity.Role;
-import vn.hcmute.cinema_booking_api.repositories.CategoryRepository;
-import vn.hcmute.cinema_booking_api.repositories.MovieRepository;
-import vn.hcmute.cinema_booking_api.repositories.RoleRepository;
+import vn.hcmute.cinema_booking_api.entity.*;
+import vn.hcmute.cinema_booking_api.repositories.*;
 
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @SpringBootApplication
@@ -146,6 +142,69 @@ public class CinemaBookingApiApplication {
 				));
 			} else {
 				System.out.println("Movie already exists");
+			}
+		};
+	}
+
+	@Bean
+	CommandLineRunner initRoomAndShowTime(RoomRepository roomRepository, MovieRepository movieRepository, ShowTimeRepository showTimeRepository) {
+		return args -> {
+
+			if (roomRepository.count() == 0) {
+				roomRepository.saveAll(List.of(
+						Room.builder().roomName("Room 1").totalSeats(40).build(),
+						Room.builder().roomName("Room 2").totalSeats(40).build(),
+						Room.builder().roomName("Room 3").totalSeats(40).build(),
+						Room.builder().roomName("Room 4").totalSeats(40).build(),
+						Room.builder().roomName("Room 5").totalSeats(40).build()
+				));
+			}
+
+			if (showTimeRepository.count() == 0 && movieRepository.count() > 0) {
+				List<Movie> movies = movieRepository.findAll();
+				List<Room> rooms = roomRepository.findAll();
+
+				if (movies.size() < 3 || rooms.size() < 5) return;
+
+				LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
+
+				showTimeRepository.saveAll(List.of(
+						ShowTime.builder()
+								.showTime(tomorrow.withHour(9).withMinute(0).withSecond(0).withNano(0))
+								.movie(movies.get(0))
+								.room(rooms.get(0))
+								.build(),
+
+						ShowTime.builder()
+								.showTime(tomorrow.withHour(14).withMinute(0).withSecond(0).withNano(0))
+								.movie(movies.get(0))
+								.room(rooms.get(1))
+								.build(),
+
+						ShowTime.builder()
+								.showTime(tomorrow.withHour(19).withMinute(30).withSecond(0).withNano(0))
+								.movie(movies.get(0))
+								.room(rooms.get(2))
+								.build(),
+
+						ShowTime.builder()
+								.showTime(tomorrow.withHour(10).withMinute(0).withSecond(0).withNano(0))
+								.movie(movies.get(1))
+								.room(rooms.get(3))
+								.build(),
+
+						ShowTime.builder()
+								.showTime(tomorrow.withHour(15).withMinute(30).withSecond(0).withNano(0))
+								.movie(movies.get(1))
+								.room(rooms.get(4))
+								.build(),
+
+						ShowTime.builder()
+								.showTime(tomorrow.withHour(20).withMinute(0).withSecond(0).withNano(0))
+								.movie(movies.get(2))
+								.room(rooms.get(0))
+								.build()
+				));
 			}
 		};
 	}
