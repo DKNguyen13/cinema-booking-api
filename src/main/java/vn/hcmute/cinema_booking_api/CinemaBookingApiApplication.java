@@ -5,11 +5,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import vn.hcmute.cinema_booking_api.entity.*;
 import vn.hcmute.cinema_booking_api.repositories.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootApplication
@@ -20,6 +23,7 @@ public class CinemaBookingApiApplication {
 		SpringApplication.run(CinemaBookingApiApplication.class, args);
 	}
 
+	/*
 	@Bean
 	CommandLineRunner initRoleRunner(RoleRepository roleRepository) {
 		return args -> {
@@ -31,29 +35,40 @@ public class CinemaBookingApiApplication {
 				System.out.println("Role already exists");
 		};
 	}
+	*/
 
+	/*
 	@Bean
-	CommandLineRunner initCategory(CategoryRepository categoryRepository) {
+	CommandLineRunner initAdminAccount(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
 		return args -> {
-			if(categoryRepository.count() == 0) {
-				List<Category> categories = List.of(
-						Category.builder().categoryName("Action").build(),
-						Category.builder().categoryName("Comedy").build(),
-						Category.builder().categoryName("Drama").build(),
-						Category.builder().categoryName("Horror").build(),
-						Category.builder().categoryName("Romance").build(),
-						Category.builder().categoryName("Science Fiction").build(),
-						Category.builder().categoryName("Documentary").build(),
-						Category.builder().categoryName("Animation").build()
-				);
+			String adminEmail = "admin@admin.com";
 
-				categoryRepository.saveAll(categories);
+			if (userRepository.findByEmail(adminEmail).isPresent()) {
+				System.out.println("Admin account already exists");
+				return;
 			}
-			else
-				System.out.println("Category already exists");
+
+			Role adminRole = roleRepository.findByRoleName("ADMIN")
+					.orElseThrow(() -> new RuntimeException("ADMIN role not found"));
+
+			User admin = User.builder()
+					.email(adminEmail)
+					.password(passwordEncoder.encode("admin@@"))
+					.fullName("Cinema Admin")
+					.phone("0900000000")
+					.address("Ho Chi Minh City")
+					.point(0)
+					.isActive(true)
+					.role(adminRole)
+					.build();
+
+			userRepository.save(admin);
+			System.out.println("Admin account created");
 		};
 	}
+	*/
 
+	/*
 	@Bean
 	CommandLineRunner initCategoryAndMovie(CategoryRepository categoryRepository, MovieRepository movieRepository) {
 		return args -> {
@@ -146,66 +161,92 @@ public class CinemaBookingApiApplication {
 		};
 	}
 
+	*/
+
+	/*
 	@Bean
-	CommandLineRunner initRoomAndShowTime(RoomRepository roomRepository, MovieRepository movieRepository, ShowTimeRepository showTimeRepository) {
+	CommandLineRunner initRoomSeatAndShowTime(RoomRepository roomRepository, SeatRepository seatRepository, MovieRepository movieRepository, ShowTimeRepository showTimeRepository) {
 		return args -> {
 
 			if (roomRepository.count() == 0) {
 				roomRepository.saveAll(List.of(
-						Room.builder().roomName("Room 1").totalSeats(40).build(),
-						Room.builder().roomName("Room 2").totalSeats(40).build(),
-						Room.builder().roomName("Room 3").totalSeats(40).build(),
-						Room.builder().roomName("Room 4").totalSeats(40).build(),
-						Room.builder().roomName("Room 5").totalSeats(40).build()
+						Room.builder().roomName("Room 1").totalSeats(80).build(),
+						Room.builder().roomName("Room 2").totalSeats(80).build(),
+						Room.builder().roomName("Room 3").totalSeats(80).build(),
+						Room.builder().roomName("Room 4").totalSeats(80).build(),
+						Room.builder().roomName("Room 5").totalSeats(80).build()
 				));
 			}
 
-			if (showTimeRepository.count() == 0 && movieRepository.count() > 0) {
-				List<Movie> movies = movieRepository.findAll();
-				List<Room> rooms = roomRepository.findAll();
+			List<Room> rooms = roomRepository.findAll();
 
-				if (movies.size() < 3 || rooms.size() < 5) return;
+			if (seatRepository.count() == 0) {
+				List<Seat> seats = new ArrayList<>();
+				List<String> rows = List.of("A", "B", "C", "D", "E", "F", "G", "H");
 
-				LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
+				for (Room room : rooms) {
+					for (String row : rows) {
+						for (int number = 1; number <= 10; number++) {
+							seats.add(
+									Seat.builder()
+											.seatCode(row + number)
+											.room(room)
+											.build()
+							);
+						}
+					}
+				}
 
-				showTimeRepository.saveAll(List.of(
-						ShowTime.builder()
-								.showTime(tomorrow.withHour(9).withMinute(0).withSecond(0).withNano(0))
-								.movie(movies.get(0))
-								.room(rooms.get(0))
-								.build(),
-
-						ShowTime.builder()
-								.showTime(tomorrow.withHour(14).withMinute(0).withSecond(0).withNano(0))
-								.movie(movies.get(0))
-								.room(rooms.get(1))
-								.build(),
-
-						ShowTime.builder()
-								.showTime(tomorrow.withHour(19).withMinute(30).withSecond(0).withNano(0))
-								.movie(movies.get(0))
-								.room(rooms.get(2))
-								.build(),
-
-						ShowTime.builder()
-								.showTime(tomorrow.withHour(10).withMinute(0).withSecond(0).withNano(0))
-								.movie(movies.get(1))
-								.room(rooms.get(3))
-								.build(),
-
-						ShowTime.builder()
-								.showTime(tomorrow.withHour(15).withMinute(30).withSecond(0).withNano(0))
-								.movie(movies.get(1))
-								.room(rooms.get(4))
-								.build(),
-
-						ShowTime.builder()
-								.showTime(tomorrow.withHour(20).withMinute(0).withSecond(0).withNano(0))
-								.movie(movies.get(2))
-								.room(rooms.get(0))
-								.build()
-				));
+				seatRepository.saveAll(seats);
+				System.out.println("Created " + seats.size() + " seats");
+			} else {
+				System.out.println("Seat already exists");
 			}
+
+			if (showTimeRepository.count() > 0 || movieRepository.count() == 0) {
+				System.out.println("ShowTime already exists");
+				return;
+			}
+
+			List<Movie> movies = movieRepository.findAll();
+
+			if (movies.isEmpty() || rooms.isEmpty()) return;
+
+			List<LocalTime> timeSlots = List.of(
+					LocalTime.of(8, 30),
+					LocalTime.of(10, 45),
+					LocalTime.of(13, 0),
+					LocalTime.of(15, 15),
+					LocalTime.of(17, 30),
+					LocalTime.of(19, 45),
+					LocalTime.of(22, 0)
+			);
+
+			List<ShowTime> showTimes = new ArrayList<>();
+
+			for (int day = 1; day <= 7; day++) {
+				LocalDate showDate = LocalDate.now().plusDays(day);
+
+				for (int movieIndex = 0; movieIndex < movies.size(); movieIndex++) {
+					Movie movie = movies.get(movieIndex);
+
+					for (int slotIndex = 0; slotIndex < timeSlots.size(); slotIndex++) {
+						Room room = rooms.get((movieIndex + slotIndex) % rooms.size());
+
+						showTimes.add(
+								ShowTime.builder()
+										.showTime(LocalDateTime.of(showDate, timeSlots.get(slotIndex)))
+										.movie(movie)
+										.room(room)
+										.build()
+						);
+					}
+				}
+			}
+
+			showTimeRepository.saveAll(showTimes);
+			System.out.println("Created " + showTimes.size() + " showtimes");
 		};
 	}
+	*/
 }
