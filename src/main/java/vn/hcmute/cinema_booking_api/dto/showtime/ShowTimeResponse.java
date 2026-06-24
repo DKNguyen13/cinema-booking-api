@@ -2,7 +2,6 @@ package vn.hcmute.cinema_booking_api.dto.showtime;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
 import java.time.LocalDateTime;
 
 @Getter

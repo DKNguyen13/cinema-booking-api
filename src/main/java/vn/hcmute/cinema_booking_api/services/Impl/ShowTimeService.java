@@ -25,8 +25,7 @@ public class ShowTimeService implements IShowTimeService {
         movieRepository.findByMovieIdAndIsActiveTrue(movieId)
                 .orElseThrow(() -> new BadRequestException("Movie not found"));
 
-        return showTimeRepository
-                .findByMovieMovieIdAndShowTimeAfterOrderByShowTimeAsc(movieId, LocalDateTime.now())
+        return showTimeRepository.findByMovieMovieIdAndShowTimeAfterOrderByShowTimeAsc(movieId, LocalDateTime.now())
                 .stream()
                 .map(this::mapToShowTimeResponse)
                 .toList();
@@ -53,9 +52,9 @@ public class ShowTimeService implements IShowTimeService {
         return mapToShowTimeResponse(showTime);
     }
 
+    // Helper
     private ShowTimeResponse mapToShowTimeResponse(ShowTime showTime) {
-        LocalDateTime endTime = showTime.getShowTime()
-                .plusMinutes(showTime.getMovie().getDuration());
+        LocalDateTime endTime = showTime.getShowTime().plusMinutes(showTime.getMovie().getDuration());
 
         return ShowTimeResponse.builder()
                 .showtimeId(showTime.getShowtimeId())
