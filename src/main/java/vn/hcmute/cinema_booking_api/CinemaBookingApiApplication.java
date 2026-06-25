@@ -40,35 +40,68 @@ public class CinemaBookingApiApplication {
 
 
 	@Bean
-	CommandLineRunner initAdminAccount(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+	CommandLineRunner initUsers(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
 		return args -> {
-			String adminEmail = "admin@admin.com";
 
-			if (userRepository.findByEmail(adminEmail).isPresent()) {
-				System.out.println("Admin account already exists");
-				return;
+			Role adminRole = roleRepository.findByRoleName("ADMIN").orElseThrow();
+			Role userRole = roleRepository.findByRoleName("USER").orElseThrow();
+			Role staffRole = roleRepository.findByRoleName("STAFF").orElseThrow();
+
+			List<User> users = List.of(
+
+					User.builder()
+							.email("admin@admin.com")
+							.password(passwordEncoder.encode("admin@@"))
+							.fullName("Cinema Admin")
+							.phone("0900000000")
+							.address("Ho Chi Minh City")
+							.point(0)
+							.isActive(true)
+							.role(adminRole)
+							.build(),
+
+					User.builder()
+							.email("user1@gmail.com")
+							.password(passwordEncoder.encode("123456"))
+							.fullName("Nguyen Van A")
+							.phone("0900000001")
+							.address("Ho Chi Minh City")
+							.point(120)
+							.isActive(true)
+							.role(userRole)
+							.build(),
+
+					User.builder()
+							.email("user2@gmail.com")
+							.password(passwordEncoder.encode("123456"))
+							.fullName("Tran Thi B")
+							.phone("0900000002")
+							.address("Binh Duong")
+							.point(250)
+							.isActive(true)
+							.role(userRole)
+							.build(),
+
+					User.builder()
+							.email("staff@cinema.com")
+							.password(passwordEncoder.encode("123456"))
+							.fullName("Cinema Staff")
+							.phone("0900000003")
+							.address("Ho Chi Minh City")
+							.point(0)
+							.isActive(true)
+							.role(staffRole)
+							.build()
+			);
+
+			for (User user : users) {
+				if (userRepository.findByEmail(user.getEmail()).isEmpty()) {
+					userRepository.save(user);
+					System.out.println("Created: " + user.getEmail());
+				}
 			}
-
-			Role adminRole = roleRepository.findByRoleName("ADMIN")
-					.orElseThrow(() -> new RuntimeException("ADMIN role not found"));
-
-			User admin = User.builder()
-					.email(adminEmail)
-					.password(passwordEncoder.encode("admin@@"))
-					.fullName("Cinema Admin")
-					.phone("0900000000")
-					.address("Ho Chi Minh City")
-					.point(0)
-					.isActive(true)
-					.role(adminRole)
-					.build();
-
-			userRepository.save(admin);
-			System.out.println("Admin account created");
 		};
 	}
-
-
 
 	@Bean
 	CommandLineRunner initCategoryAndMovie(CategoryRepository categoryRepository, MovieRepository movieRepository) {
@@ -154,6 +187,66 @@ public class CinemaBookingApiApplication {
 								.releaseDate(LocalDate.of(2014, 11, 7))
 								.isActive(true)
 								.categories(List.of(sciFi, drama))
+								.build(),
+
+						Movie.builder()
+								.title("Oppenheimer")
+								.description("The story of physicist J. Robert Oppenheimer and the creation of the atomic bomb during World War II.")
+								.duration(180)
+								.price(95000)
+								.posterUrl("https://image.tmdb.org/t/p/w500/ptpr0kGAckfQkJeJIt8st5dglvd.jpg")
+								.trailerUrl("https://www.youtube.com/watch?v=uYPbbksJxIg")
+								.releaseDate(LocalDate.of(2023, 7, 21))
+								.isActive(true)
+								.categories(List.of(drama))
+								.build(),
+
+						Movie.builder()
+								.title("Spider-Man: No Way Home")
+								.description("Peter Parker seeks help from Doctor Strange after his identity is revealed, opening the multiverse.")
+								.duration(148)
+								.price(90000)
+								.posterUrl("https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg")
+								.trailerUrl("https://www.youtube.com/watch?v=JfVOs4VSpmA")
+								.releaseDate(LocalDate.of(2021, 12, 17))
+								.isActive(true)
+								.categories(List.of(action, sciFi))
+								.build(),
+
+						Movie.builder()
+								.title("Avatar: The Way of Water")
+								.description("Jake Sully and Neytiri protect their family while discovering the oceans of Pandora.")
+								.duration(192)
+								.price(100000)
+								.posterUrl("https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg")
+								.trailerUrl("https://www.youtube.com/watch?v=d9MyW72ELq0")
+								.releaseDate(LocalDate.of(2022, 12, 16))
+								.isActive(true)
+								.categories(List.of(action, sciFi))
+								.build(),
+
+						Movie.builder()
+								.title("Top Gun: Maverick")
+								.description("After more than thirty years of service, Maverick returns to train a new generation of elite fighter pilots.")
+								.duration(131)
+								.price(85000)
+								.posterUrl("https://image.tmdb.org/t/p/w500/62HCnUTziyWcpDaBO2i1DX17ljH.jpg")
+								.trailerUrl("https://www.youtube.com/watch?v=giXco2jaZ_4")
+								.releaseDate(LocalDate.of(2022, 5, 27))
+								.isActive(true)
+								.categories(List.of(action, drama))
+								.build(),
+
+						Movie.builder()
+								.title("Coco")
+								.description("A young boy journeys to the Land of the Dead to uncover his family's history and pursue his dream of music.")
+								.duration(105)
+								.price(75000)
+								.posterUrl("https://image.tmdb.org/t/p/w500/gGEsBPAijhVUFoiNpgZXqRVWJt2.jpg")
+								.trailerUrl("https://www.youtube.com/watch?v=Ga6RYejo6Hk")
+								.releaseDate(LocalDate.of(2017, 11, 22))
+								.isActive(true)
+								.categories(List.of(animation, comedy))
 								.build()
 				));
 			} else {

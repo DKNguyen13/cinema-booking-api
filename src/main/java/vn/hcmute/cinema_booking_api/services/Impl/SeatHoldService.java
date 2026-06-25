@@ -36,6 +36,7 @@ public class SeatHoldService implements ISeatHoldService {
     private final SeatRepository seatRepository;
     private final BookedSeatRepository bookedSeatRepository;
     private final UserRepository userRepository;
+    private final SeatSocketService seatSocketService;
 
     @Transactional
     @Override
@@ -58,6 +59,8 @@ public class SeatHoldService implements ISeatHoldService {
         acquireSeatHolds(showtimeId, seatIds, userId);
         createOwnerBlocks(showtimeId, seatIds, userId);
 
+        seatIds.forEach(seatId -> seatSocketService.sendSeatStatus(showtimeId, seatId, "HELD"));
+
         return SeatHoldResponse.builder()
                 .showtimeId(showtimeId)
                 .seatIds(seatIds)
@@ -68,31 +71,35 @@ public class SeatHoldService implements ISeatHoldService {
 
     @Transactional
     @Override
-    public void releaseSeats(SeatHoldRequest req){
+    public void releaseSeats(SeatHoldRequest req) {
         User user = getCurrentUser();
         Long showtimeId = req.getShowtimeId();
         Long userId = user.getUserId();
+
+        if (showtimeId == null) throw new BadRequestException("Showtime is required");
+        if (req.getSeatIds() == null || req.getSeatIds().isEmpty()) throw new BadRequestException("Seat list is required");
+
         List<String> keysToDelete = new ArrayList<>();
+        List<Long> releasedSeatIds = new ArrayList<>();
 
         for (Long seatId : req.getSeatIds()) {
             String holdKey = buildSeatHoldKey(showtimeId, seatId);
-
             String currentHolder = redis.opsForValue().get(holdKey);
 
-            if (currentHolder == null) {
-                continue;
-            }
+            if (currentHolder == null) continue;
 
             if (!currentHolder.equals(String.valueOf(userId))) {
                 throw new BadRequestException("You can only release seats held by you");
             }
 
             keysToDelete.add(holdKey);
+            releasedSeatIds.add(seatId);
         }
 
-        if (!keysToDelete.isEmpty()) {
-            redis.delete(keysToDelete);
-        }
+        if (keysToDelete.isEmpty()) return;
+        redis.delete(keysToDelete);
+
+        releasedSeatIds.forEach(seatId -> seatSocketService.sendSeatStatus(showtimeId, seatId, "AVAILABLE"));
     }
 
     @Transactional

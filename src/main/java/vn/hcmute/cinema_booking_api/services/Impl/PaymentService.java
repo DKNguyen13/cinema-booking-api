@@ -41,6 +41,7 @@ public class PaymentService {
     private final OrderItemRepository orderItemRepository;
     private final TicketRepository ticketRepository;
     private final IMailService mailService;
+    private final SeatSocketService seatSocketService;
 
     @Value("${vnpay.tmn-code}")
     private String vnpTmnCode;
@@ -145,12 +146,14 @@ public class PaymentService {
         if (!success) {
             order.setStatus(OrderStatus.CANCELLED);
             orderRepository.save(order);
+            notifyAvailableSeats(order);
             releaseOrderHolds(order);
             return frontendFailUrl;
         }
 
         validateOrderSeatsNotBooked(order);
         createBookedSeats(order);
+        notifyBookedSeats(order);
 
         List<Ticket> tickets = createTickets(order);
         order.setStatus(OrderStatus.PAID);
@@ -308,14 +311,12 @@ public class PaymentService {
 
     private void createBookedSeats(Order order) {
         List<OrderItem> items = orderItemRepository.findByOrderOrderId(order.getOrderId());
-
         List<BookedSeat> bookedSeats = items.stream()
                 .map(item -> BookedSeat.builder()
                         .showTime(order.getShowtime())
                         .seat(item.getSeat())
                         .build())
                 .toList();
-
         bookedSeatRepository.saveAll(bookedSeats);
     }
 
@@ -385,8 +386,19 @@ public class PaymentService {
 
     private User getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new BadRequestException("User not found"));
+    }
+
+    private void notifyBookedSeats(Order order) {
+        Long showtimeId = order.getShowtime().getShowtimeId();
+        List<OrderItem> items = orderItemRepository.findByOrderOrderId(order.getOrderId());
+        items.forEach(item -> seatSocketService.sendSeatStatus(showtimeId, item.getSeat().getSeatId(), "BOOKED"));
+    }
+
+    private void notifyAvailableSeats(Order order) {
+        Long showtimeId = order.getShowtime().getShowtimeId();
+        List<OrderItem> items = orderItemRepository.findByOrderOrderId(order.getOrderId());
+        items.forEach(item -> seatSocketService.sendSeatStatus(showtimeId, item.getSeat().getSeatId(), "AVAILABLE"));
     }
 }
