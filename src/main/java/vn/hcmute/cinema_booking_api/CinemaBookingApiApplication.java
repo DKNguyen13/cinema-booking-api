@@ -23,7 +23,7 @@ public class CinemaBookingApiApplication {
 		SpringApplication.run(CinemaBookingApiApplication.class, args);
 	}
 
-	/*
+
 	@Bean
 	CommandLineRunner initRoleRunner(RoleRepository roleRepository) {
 		return args -> {
@@ -36,9 +36,9 @@ public class CinemaBookingApiApplication {
 				System.out.println("Role already exists");
 		};
 	}
-	*/
 
-	/*
+
+
 	@Bean
 	CommandLineRunner initAdminAccount(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
 		return args -> {
@@ -67,9 +67,9 @@ public class CinemaBookingApiApplication {
 			System.out.println("Admin account created");
 		};
 	}
-	*/
 
-	/*
+
+
 	@Bean
 	CommandLineRunner initCategoryAndMovie(CategoryRepository categoryRepository, MovieRepository movieRepository) {
 		return args -> {
@@ -162,9 +162,9 @@ public class CinemaBookingApiApplication {
 		};
 	}
 
-	*/
 
-	/*
+
+
 	@Bean
 	CommandLineRunner initRoomSeatAndShowTime(RoomRepository roomRepository, SeatRepository seatRepository, MovieRepository movieRepository, ShowTimeRepository showTimeRepository) {
 		return args -> {
@@ -249,5 +249,5 @@ public class CinemaBookingApiApplication {
 			System.out.println("Created " + showTimes.size() + " showtimes");
 		};
 	}
-	*/
+
 }

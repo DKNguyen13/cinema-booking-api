@@ -1,7 +1,13 @@
 package vn.hcmute.cinema_booking_api.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "order_items")
 public class OrderItem {
