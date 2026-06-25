@@ -1,6 +1,7 @@
 package vn.hcmute.cinema_booking_api.services.Impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.hcmute.cinema_booking_api.dto.auth.LoginResponse;
@@ -23,11 +24,14 @@ public class AuthService implements IAuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
 
-    // Login
+    // Login user
     @Override
-    public LoginResponse login(String email, String password) {
+    public LoginResponse loginUser(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BadRequestException("Invalid email or password!"));
+        if (!user.getRole().getRoleName().equals("USER")){
+            throw new BadRequestException("Invalid email or password!");
+        }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new BadRequestException("Invalid email or password");
@@ -37,8 +41,36 @@ public class AuthService implements IAuthService {
             throw new BadRequestException("Your account has been deactivated. Please contact support.");
         }
 
-        // [JWT_SECURITY]
         String token = jwtUtils.generateToken(user.getEmail());
+        return LoginResponse.builder()
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .imgUrl(user.getImageUrl())
+                .token(token)
+                .build();
+    }
+
+    @Override
+    public LoginResponse loginAdminStaff(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadRequestException("Invalid email or password!"));
+
+        String roleName = user.getRole().getRoleName();
+
+        if (!roleName.equals("ADMIN") && !roleName.equals("STAFF")) {
+            throw new BadRequestException("Invalid email or password!");
+        }
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new BadRequestException("Invalid email or password!");
+        }
+
+        if (!Boolean.TRUE.equals(user.getIsActive())) {
+            throw new BadRequestException("Your account has been deactivated. Please contact support.");
+        }
+
+        String token = jwtUtils.generateToken(user.getEmail());
+
         return LoginResponse.builder()
                 .email(user.getEmail())
                 .fullName(user.getFullName())
@@ -119,6 +151,12 @@ public class AuthService implements IAuthService {
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+    }
+
+    // Logout
+    @Override
+    public void logout() {
+        SecurityContextHolder.clearContext();
     }
 
     // Helper
