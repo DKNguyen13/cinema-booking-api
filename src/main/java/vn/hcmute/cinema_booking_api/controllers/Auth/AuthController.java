@@ -16,7 +16,13 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest) {
-        LoginResponse currentUser = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
+        LoginResponse currentUser = authService.loginUser(loginRequest.getEmail(), loginRequest.getPassword());
+        return ResponseEntity.ok(ApiResponse.success("Login successful!", currentUser));
+    }
+
+    @PostMapping("/admin-staff/login")
+    public ResponseEntity<?> adminStaffLogin(@RequestBody @Valid LoginRequest loginRequest) {
+        LoginResponse currentUser = authService.loginAdminStaff(loginRequest.getEmail(), loginRequest.getPassword());
         return ResponseEntity.ok(ApiResponse.success("Login successful!", currentUser));
     }
 
@@ -42,5 +48,11 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest req) {
         authService.resetPassword(req.getEmail(), req.getOtp(), req.getNewPassword());
         return ResponseEntity.ok(ApiResponse.success("Password reset successful!", null));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
+        authService.logout();
+        return ResponseEntity.ok(ApiResponse.success("Logout successful!", null));
     }
 }
