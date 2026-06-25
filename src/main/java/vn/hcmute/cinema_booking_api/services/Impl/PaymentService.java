@@ -12,6 +12,7 @@ import vn.hcmute.cinema_booking_api.dto.payment.CreatePaymentResponse;
 import vn.hcmute.cinema_booking_api.entity.*;
 import vn.hcmute.cinema_booking_api.exception.BadRequestException;
 import vn.hcmute.cinema_booking_api.repositories.*;
+import vn.hcmute.cinema_booking_api.services.IMailService;
 import vn.hcmute.cinema_booking_api.utils.enums.OrderStatus;
 import vn.hcmute.cinema_booking_api.utils.enums.PaymentMethod;
 import vn.hcmute.cinema_booking_api.utils.enums.TicketStatus;
@@ -25,13 +26,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static vn.hcmute.cinema_booking_api.utils.CONSTANT.MAX_SEATS;
+import static vn.hcmute.cinema_booking_api.utils.CONSTANT.PAYMENT_HOLD_MINUTES;
+
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
-
-    private static final int MAX_SEATS = 8;
-    private static final int PAYMENT_HOLD_MINUTES = 15;
-
     private final StringRedisTemplate redis;
     private final UserRepository userRepository;
     private final ShowTimeRepository showTimeRepository;
@@ -40,6 +40,7 @@ public class PaymentService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final TicketRepository ticketRepository;
+    private final IMailService mailService;
 
     @Value("${vnpay.tmn-code}")
     private String vnpTmnCode;
@@ -150,14 +151,13 @@ public class PaymentService {
 
         validateOrderSeatsNotBooked(order);
         createBookedSeats(order);
-        createTickets(order);
 
+        List<Ticket> tickets = createTickets(order);
         order.setStatus(OrderStatus.PAID);
         order.setPaidAt(LocalDateTime.now());
         orderRepository.save(order);
-
         releaseOrderHolds(order);
-
+        mailService.sendTicketEmail(order, tickets);
         return frontendSuccessUrl + "?orderId=" + order.getOrderId();
     }
 
@@ -319,9 +319,8 @@ public class PaymentService {
         bookedSeatRepository.saveAll(bookedSeats);
     }
 
-    private void createTickets(Order order) {
+    private List<Ticket> createTickets(Order order) {
         List<OrderItem> items = orderItemRepository.findByOrderOrderId(order.getOrderId());
-
         List<Ticket> tickets = items.stream()
                 .map(item -> Ticket.builder()
                         .ticketCode(generateTicketCode(order.getOrderId(), item.getSeat().getSeatId()))
@@ -340,7 +339,7 @@ public class PaymentService {
                         .build())
                 .toList();
 
-        ticketRepository.saveAll(tickets);
+        return ticketRepository.saveAll(tickets);
     }
 
     private void releaseOrderHolds(Order order) {

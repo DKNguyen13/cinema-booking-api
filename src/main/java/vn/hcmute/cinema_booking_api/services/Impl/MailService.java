@@ -1,19 +1,30 @@
 package vn.hcmute.cinema_booking_api.services.Impl;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import vn.hcmute.cinema_booking_api.entity.Order;
+import vn.hcmute.cinema_booking_api.entity.Ticket;
 import vn.hcmute.cinema_booking_api.exception.BadRequestException;
 import vn.hcmute.cinema_booking_api.services.IMailService;
 import vn.hcmute.cinema_booking_api.utils.CONSTANT;
+
+import java.io.ByteArrayOutputStream;
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -91,7 +102,149 @@ public class MailService implements IMailService {
         }
     }
 
+    @Async
+    @Override
+    public void sendTicketEmail(Order order, List<Ticket> tickets) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(fromMail, "CINEMA BOOKING");
+            helper.setTo(order.getUser().getEmail());
+            helper.setSubject("Your Cinema Tickets - Order #" + order.getOrderId());
+
+            String html = buildTicketTemplate(order, tickets);
+            helper.setText(html, true);
+
+            for (Ticket ticket : tickets) {
+                String cid = "qr_" + ticket.getTicketId();
+                helper.addInline(cid, new ByteArrayResource(generateQrCode(ticket.getQrToken())), "image/png");
+            }
+
+            mailSender.send(message);
+
+        } catch (Exception e) {
+            log.error("Send ticket email failed for order: {}", order.getOrderId(), e);
+        }
+    }
+
     // Helper
+    private String buildTicketTemplate(Order order, List<Ticket> tickets) {
+        String ticketRows = tickets.stream()
+                .map(ticket -> """
+            <table width="100%%" cellpadding="0" cellspacing="0"
+                   style="margin:18px 0;border:1px solid #e5e5e5;border-radius:14px;
+                          border-collapse:separate;background:#fff;
+                          box-shadow:0 2px 8px rgba(0,0,0,.05);">
+
+                <tr>
+                    <td style="padding:18px;vertical-align:top;width:70%%;">
+
+                        <div style="font-size:22px;
+                                    font-weight:bold;
+                                    color:#d6336c;
+                                    margin-bottom:12px;">
+                            🎟 Seat %s
+                        </div>
+
+                        <table style="font-size:14px;line-height:1.8;">
+                            <tr>
+                                <td style="color:#777;">Movie</td>
+                                <td><b>%s</b></td>
+                            </tr>
+
+                            <tr>
+                                <td style="color:#777;">Room</td>
+                                <td><b>%s</b></td>
+                            </tr>
+
+                            <tr>
+                                <td style="color:#777;">Showtime</td>
+                                <td><b>%s</b></td>
+                            </tr>
+
+                            <tr>
+                                <td style="color:#777;">Seat</td>
+                                <td><b>%s</b></td>
+                            </tr>
+
+                            <tr>
+                                <td style="color:#777;">Price</td>
+                                <td><b style="color:#e63946;">%,d VND</b></td>
+                            </tr>
+
+                            <tr>
+                                <td style="color:#777;">Ticket</td>
+                                <td style="font-family:monospace;">
+                                    %s
+                                </td>
+                            </tr>
+
+                        </table>
+
+                    </td>
+
+                    <td style="width:30%%;
+                               text-align:center;
+                               border-left:2px dashed #ddd;
+                               padding:18px;">
+
+                        <img src="cid:qr_%d"
+                             width="150"
+                             height="150"
+                             style="display:block;margin:auto;" />
+
+                        <div style="font-size:12px;
+                                    color:#777;
+                                    margin-top:10px;">
+                            Scan QR to enter
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            </table>
+        """.formatted(
+                        ticket.getSeatCode(),
+                        ticket.getMovieTitle(),
+                        ticket.getRoomName(),
+                        ticket.getShowTimeDateTime(),
+                        ticket.getSeatCode(),
+                        ticket.getPrice(),
+                        ticket.getTicketCode(),
+                        ticket.getTicketId()
+                ))
+                .collect(Collectors.joining());
+
+        return """
+        <div style="font-family: Arial, sans-serif; background:#f4f6f8; padding:30px;">
+            <div style="max-width:650px; margin:auto; background:white; padding:25px; border-radius:12px;">
+                <h2 style="text-align:center; color:#d6336c;">🎬 CINEMA BOOKING</h2>
+                <p style="text-align:center; color:#666;">Your payment was successful.</p>
+
+                <hr/>
+
+                <p><b>Order ID:</b> #%d</p>
+                <p><b>Total tickets:</b> %d</p>
+                <p><b>Total price:</b> %,d VND</p>
+
+                <h3>Your tickets</h3>
+                %s
+
+                <p style="font-size:13px; color:#666;">
+                    Please show this email or QR code at the cinema counter for ticket verification.
+                </p>
+            </div>
+        </div>
+    """.formatted(
+                order.getOrderId(),
+                tickets.size(),
+                order.getFinalPrice(),
+                ticketRows
+        );
+    }
+
     private String buildOtpTemplate(String otp) {
         return """
         <div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 30px;">
@@ -153,5 +306,19 @@ public class MailService implements IMailService {
 
     private String normalizeEmail(String email) {
         return email.trim().toLowerCase();
+    }
+
+    private byte[] generateQrCode(String text) {
+        try {
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 180, 180);
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream);
+
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot generate QR code");
+        }
     }
 }
