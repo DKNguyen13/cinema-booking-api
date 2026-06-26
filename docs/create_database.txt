@@ -1,0 +1,11 @@
+-- Tạo database với bộ mã hóa UTF-8 đầy đủ
+CREATE DATABASE cinema_booking DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Tạo user 'cinema_booking' có thể truy cập từ mọi IP (%)
+CREATE USER 'cinema_booking'@'%' IDENTIFIED BY 'cinema_booking123!';
+
+-- Cấp quyền toàn bộ trên cinema_booking cho user 'cinema_booking'
+GRANT ALL PRIVILEGES ON cinema_booking.* TO 'cinema_booking'@'%';
+
+-- Xác nhận cập nhật quyền
+FLUSH PRIVILEGES;
