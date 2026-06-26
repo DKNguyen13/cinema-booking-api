@@ -10,15 +10,12 @@ import java.util.Optional;
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long> {
     List<Movie> findByIsActiveTrueOrderByReleaseDateDesc();
+    List<Movie> findAllByOrderByReleaseDateDesc();
+    Optional<Movie> findByMovieId(Long movieId);
     Optional<Movie> findByMovieIdAndIsActiveTrue(Long movieId);
     List<Movie> findByTitleContainingIgnoreCaseAndIsActiveTrueOrderByReleaseDateDesc(String keyword);
+    long countByIsActiveTrue();
 
-    @Query("""
-        SELECT DISTINCT m
-        FROM Movie m
-        JOIN m.categories c
-        WHERE c.categoryId = :categoryId AND m.isActive = true
-        ORDER BY m.releaseDate DESC
-    """)
+    @Query("SELECT DISTINCT m FROM Movie m JOIN m.categories c WHERE c.categoryId = :categoryId AND m.isActive = true ORDER BY m.releaseDate DESC")
     List<Movie> findActiveMoviesByCategoryId(Long categoryId);
 }
