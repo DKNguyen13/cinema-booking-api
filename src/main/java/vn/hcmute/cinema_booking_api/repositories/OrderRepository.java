@@ -1,5 +1,6 @@
 package vn.hcmute.cinema_booking_api.repositories;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,6 +13,7 @@ import java.util.List;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUserUserIdOrderByCreatedDateDesc(Long userId);
+    @EntityGraph(attributePaths = {"user", "showtime", "showtime.movie"})
     List<Order> findAllByOrderByCreatedDateDesc();
     long countByStatus(OrderStatus status);
     long countByCreatedDateBetween(LocalDateTime from, LocalDateTime to);

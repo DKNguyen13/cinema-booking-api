@@ -1,5 +1,6 @@
 package vn.hcmute.cinema_booking_api.repositories;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,7 +16,9 @@ import java.util.Optional;
 public interface ShowTimeRepository extends JpaRepository<ShowTime, Long> {
 
     Optional<ShowTime> findByShowtimeId(Long showtimeId);
+    @EntityGraph(attributePaths = {"movie", "room"})
     List<ShowTime> findByMovieMovieIdAndShowTimeAfterOrderByShowTimeAsc(Long movieId, LocalDateTime now);
+    @EntityGraph(attributePaths = {"movie", "room"})
     List<ShowTime> findAllByOrderByShowTimeDesc();
 
     @Query("""
