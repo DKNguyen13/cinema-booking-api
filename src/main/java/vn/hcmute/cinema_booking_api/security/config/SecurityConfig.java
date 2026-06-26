@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import vn.hcmute.cinema_booking_api.configs.AppProperties;
 import vn.hcmute.cinema_booking_api.security.jwt.JwtFilter;
 import java.util.List;
 
@@ -23,8 +24,8 @@ import java.util.List;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
     private final JwtFilter jwtFilter;
+    private final AppProperties appProperties;
 
     private static final String[] PUBLIC_ENDPOINTS = {
             "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/api/auth/**"
@@ -50,7 +51,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5174"));
+        config.setAllowedOrigins(appProperties.getCors().getAllowedOrigins());
         config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization","Content-Type","Accept","Origin"));
         config.setExposedHeaders(List.of("Authorization"));
